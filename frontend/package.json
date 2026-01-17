@@ -1,0 +1,35 @@
+{
+  "name": "creativehub-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CreativeHub Pro - Digital Marketplace & eLearning Platform",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "@reduxjs/toolkit": "^2.10.1",
+    "react-redux": "^9.2.0",
+    "@hookform/resolvers": "^5.2.2",
+    "react-hook-form": "^7.69.0",
+    "zod": "^4.2.1",
+    "framer-motion": "^12.0.0",
+    "react-hot-toast": "^2.6.0",
+    "react-icons": "^5.5.0",
+    "date-fns": "^4.1.0",
+    "recharts": "^3.0.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "tailwindcss": "^4"
+  }
+}
