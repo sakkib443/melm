@@ -4,10 +4,12 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { Toaster } from "react-hot-toast";
 import ReduxProvider from "@/redux/ReduxProvider";
+import Preloader from "@/components/shared/Preloader";
 
 export default function ClientProviders({ children }) {
     return (
         <ReduxProvider>
+            <Preloader />
             <ThemeProvider>
                 <LanguageProvider>
                     <Toaster
