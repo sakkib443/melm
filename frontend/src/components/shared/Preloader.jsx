@@ -31,16 +31,14 @@ export default function Preloader() {
             d: "M 0 0 V 100 Q 50 100 100 100 V 0 Z",
         },
         exit: {
-            // Keyframes for a smooth 'bent' rise
             d: [
                 "M 0 0 V 100 Q 50 100 100 100 V 0 Z",
-                "M 0 0 V 50 Q 50 0 100 50 V 0 Z",
+                "M 0 0 V 50 Q 50 25 100 50 V 0 Z",
                 "M 0 0 V 0 Q 50 0 100 0 V 0 Z"
             ],
             transition: {
-                duration: 3.2, // Even slower and more professional
-                times: [0, 0.4, 1],
-                ease: [0.76, 0, 0.24, 1],
+                duration: 1.0, // Slightly faster
+                ease: "linear", // Constant speed - no slowing down
                 delay: 0.1
             }
         }
@@ -49,9 +47,8 @@ export default function Preloader() {
     const containerVariants = {
         initial: { opacity: 1 },
         exit: {
-            // Removed y movement from container to let SVG handle the 'baka' transition cleanly
             opacity: 1,
-            transition: { duration: 3.2 }
+            transition: { duration: 1.2 }
         }
     };
 
@@ -80,7 +77,7 @@ export default function Preloader() {
                     exit="exit"
                     className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
                 >
-                    {/* SVG Curtain - Richer Premium Dark */}
+                    {/* SVG Curtain with Curved Wave Animation */}
                     <svg
                         className="absolute top-0 w-full h-[100vh] fill-[#0a0a0a]"
                         viewBox="0 0 100 100"
@@ -112,7 +109,7 @@ export default function Preloader() {
 
                         {/* Progress Indicator */}
                         <div className="flex flex-col items-center">
-                            <div className="overflow-hidden h-10 flex items-center justify-center">
+                            <div className="h-10 flex items-center justify-center">
                                 <motion.span
                                     className="text-white text-6xl font-light tracking-tighter tabular-nums"
                                     initial={{ y: 50 }}
