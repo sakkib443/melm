@@ -53,6 +53,71 @@ const PlatformService = {
     async decrementProductCount(id: string): Promise<void> {
         await Platform.findByIdAndUpdate(id, { $inc: { productCount: -1 } });
     },
+
+    // ==================== MODULE MANAGEMENT ====================
+
+    /**
+     * Get enabled modules configuration
+     * Returns default config if not set
+     */
+    async getEnabledModules(): Promise<any> {
+        const { PlatformSettings } = await import('./platformSettings.model');
+
+        const settings = await PlatformSettings.findOne({ key: 'enabled_modules' });
+
+        if (!settings) {
+            // Return all enabled by default
+            return {
+                lms: {
+                    courses: true,
+                    modules: true,
+                    lessons: true,
+                    enrollments: true,
+                    certificates: true,
+                    liveClasses: true,
+                    webinars: true,
+                    quizResults: true,
+                },
+                marketplace: {
+                    graphics: true,
+                    videoTemplates: true,
+                    uiKits: true,
+                    appTemplates: true,
+                    audio: true,
+                    photos: true,
+                    fonts: true,
+                },
+                products: {
+                    websites: true,
+                    software: true,
+                },
+            };
+        }
+
+        return settings.value;
+    },
+
+    /**
+     * Update enabled modules configuration
+     * Only admin can update
+     */
+    async updateEnabledModules(modules: any, userId: string): Promise<any> {
+        const { PlatformSettings } = await import('./platformSettings.model');
+
+        const updated = await PlatformSettings.findOneAndUpdate(
+            { key: 'enabled_modules' },
+            {
+                $set: {
+                    key: 'enabled_modules',
+                    value: modules,
+                    updatedBy: userId,
+                }
+            },
+            { upsert: true, new: true }
+        );
+
+        return updated.value;
+    },
 };
 
 export default PlatformService;

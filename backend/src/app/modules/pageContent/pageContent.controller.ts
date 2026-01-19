@@ -173,6 +173,43 @@ const getPublicPageContent = async (req: Request, res: Response, next: NextFunct
     }
 };
 
+/**
+ * Get theme settings (global theme for all users)
+ */
+const getTheme = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+        const result = await PageContentService.getThemeSettings();
+
+        res.status(200).json({
+            success: true,
+            message: 'Theme settings retrieved successfully',
+            data: result
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Update theme settings (admin only)
+ */
+const updateTheme = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { themeContent } = req.body;
+        const userId = (req as any).user?._id;
+
+        const result = await PageContentService.updateThemeSettings(themeContent, userId);
+
+        res.status(200).json({
+            success: true,
+            message: 'Theme settings updated successfully',
+            data: result
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const PageContentController = {
     getPageDefinitions,
     getAllPagesOverview,
@@ -181,5 +218,7 @@ export const PageContentController = {
     updateSectionContent,
     updateMultipleSections,
     toggleSectionActive,
-    getPublicPageContent
+    getPublicPageContent,
+    getTheme,
+    updateTheme,
 };

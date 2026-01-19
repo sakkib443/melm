@@ -181,6 +181,74 @@ const getPublicPageContent = async (pageKey: string): Promise<Record<string, unk
     return result;
 };
 
+/**
+ * Get theme settings (global theme for all users)
+ */
+const getThemeSettings = async (): Promise<any> => {
+    const theme = await PageContent.findOne({ pageKey: 'global', sectionKey: 'theme' });
+
+    if (!theme) {
+        // Return default theme if not set
+        return {
+            section: 'theme',
+            themeContent: {
+                colors: {
+                    primary: '#6366f1',
+                    primaryLight: '#818cf8',
+                    primaryDark: '#4f46e5',
+                    secondary: '#f97316',
+                    secondaryLight: '#fb923c',
+                    secondaryDark: '#ea580c',
+                    accent: '#10b981',
+                },
+                fonts: {
+                    heading: 'Poppins',
+                    body: 'Poppins',
+                },
+                branding: {
+                    name: 'CreativeHub',
+                    logo: '',
+                },
+            },
+            isActive: true,
+        };
+    }
+
+    return {
+        section: 'theme',
+        themeContent: theme.content,
+        isActive: theme.isActive,
+    };
+};
+
+/**
+ * Update theme settings (global theme for all users)
+ */
+const updateThemeSettings = async (
+    themeContent: Record<string, unknown>,
+    userId?: Types.ObjectId
+): Promise<any> => {
+    const updated = await PageContent.findOneAndUpdate(
+        { pageKey: 'global', sectionKey: 'theme' },
+        {
+            $set: {
+                pageKey: 'global',
+                sectionKey: 'theme',
+                content: themeContent,
+                isActive: true,
+                lastUpdatedBy: userId,
+            }
+        },
+        { upsert: true, new: true }
+    );
+
+    return {
+        section: 'theme',
+        themeContent: updated.content,
+        isActive: updated.isActive,
+    };
+};
+
 export const PageContentService = {
     getPageDefinitions,
     getPageSectionContent,
@@ -190,5 +258,7 @@ export const PageContentService = {
     updateMultipleSections,
     toggleSectionActive,
     getAllPagesOverview,
-    getPublicPageContent
+    getPublicPageContent,
+    getThemeSettings,
+    updateThemeSettings,
 };

@@ -32,6 +32,7 @@ import {
     FiDollarSign,
 } from "react-icons/fi";
 import { useTheme } from "@/context/ThemeContext";
+import { useModules } from "@/context/ModuleContext";
 import { useSelector, useDispatch } from "react-redux";
 import { selectCurrentUser, selectIsAuthenticated, selectToken, logout } from "@/redux/features/authSlice";
 
@@ -89,6 +90,12 @@ const menuItems = [
             { name: "Create Module", href: "/dashboard/admin/modules/create", icon: FiPlus },
             { name: "All Lessons", href: "/dashboard/admin/lessons", icon: FiVideo },
             { name: "Create Lesson", href: "/dashboard/admin/lessons/create", icon: FiPlus },
+            { name: "Live Classes", href: "/dashboard/admin/live-classes", icon: FiVideo },
+            { name: "Schedule Class", href: "/dashboard/admin/live-classes/create", icon: FiPlus },
+            { name: "Webinars", href: "/dashboard/admin/webinars", icon: FiUsers },
+            { name: "Create Webinar", href: "/dashboard/admin/webinars/create", icon: FiPlus },
+            { name: "Certificates", href: "/dashboard/admin/certificates", icon: FiImage },
+            { name: "Quiz Results", href: "/dashboard/admin/quiz-results", icon: FiBarChart2 },
             { name: "Enrollments", href: "/dashboard/admin/enrollments", icon: FiUsers },
         ],
     },
@@ -151,6 +158,12 @@ const menuItems = [
         href: "/dashboard/admin/theme",
         icon: FiSliders,
         gradient: "from-rose-500 to-pink-500"
+    },
+    {
+        name: "Module Settings",
+        href: "/dashboard/admin/module-settings",
+        icon: FiSliders,
+        gradient: "from-purple-500 to-indigo-500"
     },
     {
         name: "Settings",
@@ -257,11 +270,57 @@ export default function DashboardLayout({ children }) {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const { theme } = useTheme();
+    const { isModuleEnabled } = useModules();
     const user = useSelector(selectCurrentUser);
     const token = useSelector(selectToken);
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const dispatch = useDispatch();
     const router = useRouter();
+
+    // Filter menu items based on enabled modules
+    const getFilteredMenuItems = () => {
+        return menuItems.map(item => {
+            // For items with children (submenu)
+            if (item.children) {
+                const filteredChildren = item.children.filter(child => {
+                    // Check if this child is a module-dependent item
+                    if (child.href.includes('/courses') || child.href.includes('/modules') ||
+                        child.href.includes('/lessons') || child.href.includes('/enrollments') ||
+                        child.href.includes('/certificates') || child.href.includes('/live-classes') ||
+                        child.href.includes('/webinars') || child.href.includes('/quiz-results')) {
+                        // LMS modules - check enabled status
+                        if (child.href.includes('/courses')) return isModuleEnabled('lms', 'courses');
+                        if (child.href.includes('/modules')) return isModuleEnabled('lms', 'modules');
+                        if (child.href.includes('/lessons')) return isModuleEnabled('lms', 'lessons');
+                        if (child.href.includes('/enrollments')) return isModuleEnabled('lms', 'enrollments');
+                        if (child.href.includes('/certificates')) return isModuleEnabled('lms', 'certificates');
+                        if (child.href.includes('/live-classes')) return isModuleEnabled('lms', 'liveClasses');
+                        if (child.href.includes('/webinars')) return isModuleEnabled('lms', 'webinars');
+                        if (child.href.includes('/quiz-results')) return isModuleEnabled('lms', 'quizResults');
+                    }
+
+                    if (child.href.includes('/products/graphics')) return isModuleEnabled('marketplace', 'graphics');
+                    if (child.href.includes('/products/videos')) return isModuleEnabled('marketplace', 'videoTemplates');
+                    if (child.href.includes('/products/ui-kits')) return isModuleEnabled('marketplace', 'uiKits');
+                    if (child.href.includes('/products/apps')) return isModuleEnabled('marketplace', 'appTemplates');
+                    if (child.href.includes('/products/audio')) return isModuleEnabled('marketplace', 'audio');
+                    if (child.href.includes('/products/photos')) return isModuleEnabled('marketplace', 'photos');
+                    if (child.href.includes('/products/fonts')) return isModuleEnabled('marketplace', 'fonts');
+
+                    return true; // Show other items
+                });
+
+                // Hide parent if all children are hidden
+                if (filteredChildren.length === 0) return null;
+
+                return { ...item, children: filteredChildren };
+            }
+
+            return item; // No children, keep as is
+        }).filter(item => item !== null);
+    };
+
+    const filteredMenuItems = getFilteredMenuItems();
 
     // ==================== AUTH GUARD ====================
     // Check authentication on mount and redirect if not authenticated
@@ -334,7 +393,7 @@ export default function DashboardLayout({ children }) {
                             Main Menu
                         </p>
                     )}
-                    {menuItems.map((item) => (
+                    {filteredMenuItems.map((item) => (
                         <SidebarItem key={item.name} item={item} isCollapsed={!isSidebarOpen} />
                     ))}
                 </nav>
@@ -382,7 +441,7 @@ export default function DashboardLayout({ children }) {
                                 </button>
                             </div>
                             <nav className="p-4 space-y-2">
-                                {menuItems.map((item) => (
+                                {filteredMenuItems.map((item) => (
                                     <SidebarItem key={item.name} item={item} isCollapsed={false} />
                                 ))}
                             </nav>

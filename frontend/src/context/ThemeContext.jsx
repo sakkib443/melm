@@ -65,13 +65,7 @@ export function ThemeProvider({ children }) {
     useEffect(() => {
         const loadTheme = async () => {
             try {
-                // Try to load from localStorage first (for instant load)
-                const cachedTheme = localStorage.getItem("creativehub-theme");
-                if (cachedTheme) {
-                    setTheme({ ...defaultTheme, ...JSON.parse(cachedTheme) });
-                }
-
-                // Then fetch from API for latest
+                // Fetch from API - database is the ONLY source of truth
                 const response = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/design/theme`
                 );
@@ -96,11 +90,10 @@ export function ThemeProvider({ children }) {
                             darkMode: defaultTheme.darkMode,
                         };
                         setTheme(apiTheme);
-                        localStorage.setItem("creativehub-theme", JSON.stringify(apiTheme));
                     }
                 }
             } catch (error) {
-                console.log("Using default theme");
+                console.log("Using default theme - API not available");
             } finally {
                 setIsLoading(false);
             }
@@ -136,11 +129,12 @@ export function ThemeProvider({ children }) {
         }
     }, [theme]);
 
-    // Update theme (Used by Admin)
+    // Update theme (Used by Admin for live preview ONLY)
+    // Actual save to database happens via admin page API call
     const updateTheme = (newTheme) => {
         const updated = { ...theme, ...newTheme };
         setTheme(updated);
-        localStorage.setItem("creativehub-theme", JSON.stringify(updated));
+        // No localStorage! Admin saves via PATCH /api/design/theme
     };
 
     // Toggle dark mode
@@ -151,7 +145,6 @@ export function ThemeProvider({ children }) {
     // Reset to default
     const resetTheme = () => {
         setTheme(defaultTheme);
-        localStorage.removeItem("creativehub-theme");
     };
 
     return (

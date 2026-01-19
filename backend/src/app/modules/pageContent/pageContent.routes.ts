@@ -5,6 +5,7 @@
 
 import express from 'express';
 import { PageContentController } from './pageContent.controller';
+import { authMiddleware, authorizeRoles } from '../../middlewares/auth';
 
 const router = express.Router();
 
@@ -12,7 +13,13 @@ const router = express.Router();
 // Get content for public pages (frontend use)
 router.get('/public/:pageKey', PageContentController.getPublicPageContent);
 
+// Get theme settings (public - all users need this)
+router.get('/theme', PageContentController.getTheme);
+
 // ==================== ADMIN ROUTES ====================
+// Update theme settings (admin only)
+router.patch('/theme', authMiddleware, authorizeRoles('admin'), PageContentController.updateTheme);
+
 // Get all page definitions (structure)
 router.get('/definitions', PageContentController.getPageDefinitions);
 

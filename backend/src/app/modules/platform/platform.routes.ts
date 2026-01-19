@@ -20,4 +20,11 @@ router.post('/admin', authMiddleware, authorizeRoles('admin'), validateRequest(c
 router.patch('/admin/:id', authMiddleware, authorizeRoles('admin'), validateRequest(updatePlatformValidation), PlatformController.updatePlatform);
 router.delete('/admin/:id', authMiddleware, authorizeRoles('admin'), PlatformController.deletePlatform);
 
+// ==================== MODULE MANAGEMENT ROUTES ====================
+// Get enabled modules (public)
+router.get('/settings/modules', PlatformController.getEnabledModules);
+
+// Update enabled modules (admin only)
+router.patch('/settings/modules', authMiddleware, authorizeRoles('admin'), PlatformController.updateEnabledModules);
+
 export const PlatformRoutes = router;

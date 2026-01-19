@@ -241,6 +241,67 @@ const getPasswordResetEmailTemplate = (firstName: string, resetLink: string) => 
     </p>
 `);
 
+// Live Class notification email template
+interface LiveClassData {
+    studentName: string;
+    className: string;
+    instructorName: string;
+    scheduledAt: Date;
+    duration: number;
+    joinUrl: string;
+}
+
+const getLiveClassEmailTemplate = (data: LiveClassData) => getEmailWrapper(`
+    <div style="text-align: center; margin-bottom: 30px;">
+        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 36px;">🎥</span>
+        </div>
+        <h2 style="color: #1e293b; font-size: 24px; margin-bottom: 10px;">New Live Class Scheduled!</h2>
+        <p style="color: #64748b; font-size: 16px;">Join your upcoming online class</p>
+    </div>
+    
+    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+        Hi <strong>${data.studentName}</strong>,
+    </p>
+    
+    <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
+        You've been invited to an upcoming live class!
+    </p>
+    
+    <!-- Class Details Box -->
+    <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 12px; padding: 25px; margin-bottom: 25px;">
+        <h3 style="color: #1e40af; font-size: 18px; margin-bottom: 15px;">📚 ${data.className}</h3>
+        <div style="color: #1e3a8a; font-size: 14px; line-height: 2;">
+            <p style="margin: 0;"><strong>Instructor:</strong> ${data.instructorName}</p>
+            <p style="margin: 0;"><strong>Date & Time:</strong> ${new Date(data.scheduledAt).toLocaleString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+})}</p>
+            <p style="margin: 0;"><strong>Duration:</strong> ${data.duration} minutes</p>
+        </div>
+    </div>
+    
+    <div style="background: #fef3c7; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+        <p style="color: #92400e; font-size: 14px; margin: 0;">
+            ⏰ <strong>Reminder:</strong> You'll receive another notification 30 minutes before the class starts!
+        </p>
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="${data.joinUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+            View Class Details
+        </a>
+    </div>
+    
+    <p style="color: #64748b; font-size: 14px; text-align: center; margin-top: 30px;">
+        Questions? Contact us at <a href="mailto:support@creativehub.com" style="color: #14b8a6;">support@creativehub.com</a>
+    </p>
+`);
+
 // ===================================================================
 // EMAIL SERVICE
 // ===================================================================
@@ -298,6 +359,23 @@ const EmailService = {
         }
     },
 
+    // Send live class notification email
+    async sendLiveClassNotification(email: string, classData: LiveClassData): Promise<boolean> {
+        try {
+            await transporter.sendMail({
+                from: `"creativehub" <${config.email.from}>`,
+                to: email,
+                subject: `🎥 New Live Class: ${classData.className}`,
+                html: getLiveClassEmailTemplate(classData),
+            });
+            console.log(`✅ Live class notification sent to ${email}`);
+            return true;
+        } catch (error) {
+            console.error('❌ Failed to send live class notification:', error);
+            return false;
+        }
+    },
+
     // Verify email configuration
     async verifyConnection(): Promise<boolean> {
         try {
@@ -312,4 +390,4 @@ const EmailService = {
 };
 
 export default EmailService;
-export { InvoiceData, OrderItem };
+export { InvoiceData, OrderItem, LiveClassData };

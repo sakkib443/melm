@@ -98,7 +98,7 @@ export const reviewService = {
 // ==================== ANALYTICS SERVICE ====================
 export const analyticsService = {
     getDashboard: () =>
-        apiFetch("/api/stats/dashboard"),
+        apiFetch("/api/analytics/dashboard"),
 
     getRevenue: (period = "monthly") =>
         apiFetch(`/api/analytics/revenue?period=${period}`),
@@ -472,3 +472,16 @@ export const statsService = {
     getDashboardStats: () =>
         apiFetch("/api/stats/dashboard"),
 };
+
+// ==================== PLATFORM/MODULE SERVICE ====================
+export const platformService = {
+    getEnabledModules: () =>
+        apiFetch("/api/platforms/settings/modules"),
+
+    updateEnabledModules: (modules) =>
+        apiFetch("/api/platforms/settings/modules", {
+            method: "PATCH",
+            body: JSON.stringify(modules),
+        }),
+};
+

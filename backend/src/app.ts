@@ -33,6 +33,13 @@ import { LessonRoutes } from './app/modules/lesson/lesson.routes';
 import { ModuleRoutes } from './app/modules/module/module.routes';
 import { EnrollmentRoutes } from './app/modules/enrollment/enrollment.routes';
 import { NotificationRoutes } from './app/modules/notification/notification.module';
+import { LiveClassRoutes } from './app/modules/liveClass/liveClass.route';
+import { WebinarRoutes } from './app/modules/webinar/webinar.route';
+import { CertificateRoutes } from './app/modules/certificate/certificate.route';
+import { QuizResultRoutes } from './app/modules/quizResult/quizResult.module';
+import { StripeRoutes } from './app/modules/payment/stripe.module';
+import { SSLCommerzRoutes } from './app/modules/payment/sslcommerz.module';
+import { TwoFactorRoutes } from './app/modules/auth/twoFactor.module';
 
 import { StatsRoutes } from './app/modules/stats/stats.routes';
 import { CouponRoutes } from './app/modules/coupon/coupon.routes';
@@ -139,6 +146,18 @@ app.use('/api/lessons', LessonRoutes);
 // Enrollment routes (LMS - authenticated)
 app.use('/api/enrollments', EnrollmentRoutes);
 
+// Live Class routes (LMS - instructors + students)
+app.use('/api/live-classes', LiveClassRoutes);
+
+// Webinar/Seminar routes (free events)
+app.use('/api/webinars', WebinarRoutes);
+
+// Certificate routes (student certificates)
+app.use('/api/certificates', CertificateRoutes);
+
+// Quiz Result routes (quiz submissions)
+app.use('/api/quiz-results', QuizResultRoutes);
+
 // Cart routes (authenticated)
 app.use('/api/cart', CartRoutes);
 
@@ -156,6 +175,15 @@ app.use('/api/downloads', DownloadRoutes);
 
 // bKash Payment routes (authenticated)
 app.use('/api/bkash', BkashRoutes);
+
+// Stripe Payment routes
+app.use('/api/stripe', StripeRoutes);
+
+// SSLCommerz Payment routes
+app.use('/api/sslcommerz', SSLCommerzRoutes);
+
+// 2FA routes
+app.use('/api/2fa', TwoFactorRoutes);
 
 // Analytics routes (admin only)
 app.use('/api/analytics', AnalyticsRoutes);
@@ -179,6 +207,9 @@ app.use('/api/site-content', SiteContentRoutes);
 
 // Page Content routes (dynamic page content management)
 app.use('/api/page-content', PageContentRoutes);
+
+// Design/Theme routes (alias for PageContent theme endpoints)
+app.use('/api/design', PageContentRoutes);
 
 // Blog routes (blog posts and comments)
 app.use('/api/blogs', BlogRoutes);

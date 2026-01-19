@@ -37,6 +37,19 @@ const PlatformController = {
         await PlatformService.deletePlatform(req.params.id);
         sendResponse(res, { statusCode: 200, success: true, message: 'Platform deleted' });
     }),
+
+    // ==================== MODULE MANAGEMENT ====================
+
+    getEnabledModules: catchAsync(async (req: Request, res: Response) => {
+        const modules = await PlatformService.getEnabledModules();
+        sendResponse(res, { statusCode: 200, success: true, message: 'Enabled modules fetched', data: modules });
+    }),
+
+    updateEnabledModules: catchAsync(async (req: Request, res: Response) => {
+        const userId = (req as any).user?._id;
+        const modules = await PlatformService.updateEnabledModules(req.body, userId);
+        sendResponse(res, { statusCode: 200, success: true, message: 'Module settings updated successfully', data: modules });
+    }),
 };
 
 export default PlatformController;

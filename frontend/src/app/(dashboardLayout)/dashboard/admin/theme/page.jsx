@@ -146,13 +146,14 @@ export default function ThemeSettingsPage() {
             );
 
             if (response.ok) {
-                toast.success("Theme settings saved successfully!");
+                toast.success("Theme settings saved successfully! All users will see this theme.");
             } else {
-                toast.success("Theme applied locally (backend save pending)");
+                const errorData = await response.json();
+                toast.error(errorData.message || "Failed to save theme settings");
             }
         } catch (error) {
             console.error("Save error:", error);
-            toast.success("Theme applied locally");
+            toast.error("Failed to save theme settings. Please try again.");
         } finally {
             setIsSaving(false);
         }
