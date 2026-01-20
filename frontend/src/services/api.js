@@ -95,6 +95,21 @@ export const reviewService = {
     markHelpful: (id) => apiFetch(`/api/reviews/${id}/helpful`, { method: 'POST' }),
 };
 
+// ==================== CART SERVICE ====================
+export const cartService = {
+    getCart: () =>
+        apiFetch("/api/cart"),
+
+    addToCart: (data) =>
+        apiFetch("/api/cart", { method: "POST", body: JSON.stringify(data) }),
+
+    removeFromCart: (productId) =>
+        apiFetch(`/api/cart/${productId}`, { method: "DELETE" }),
+
+    clearCart: () =>
+        apiFetch("/api/cart", { method: "DELETE" }),
+};
+
 // ==================== ANALYTICS SERVICE ====================
 export const analyticsService = {
     getDashboard: () =>

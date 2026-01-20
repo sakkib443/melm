@@ -110,7 +110,10 @@ const FontService = {
         const conditions: Record<string, unknown>[] = [];
         if (searchTerm) conditions.push({ $or: [{ title: { $regex: searchTerm, $options: 'i' } }] });
         if (type) conditions.push({ type });
-        if (category) conditions.push({ category: new Types.ObjectId(category as string) });
+        if (category) {
+            const isValidObjectId = Types.ObjectId.isValid(category as string);
+            conditions.push({ category: isValidObjectId ? new Types.ObjectId(category as string) : category });
+        }
         if (seller) conditions.push({ seller: new Types.ObjectId(seller as string) });
         if (status) conditions.push({ status });
         if (language) conditions.push({ languages: language });

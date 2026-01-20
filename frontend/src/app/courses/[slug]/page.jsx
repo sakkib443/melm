@@ -9,11 +9,11 @@ import {
     FiPlay, FiClock, FiBook, FiUsers, FiStar, FiGlobe, FiAward,
     FiCheck, FiChevronDown, FiChevronUp, FiLock, FiDownload,
     FiHeart, FiShare2, FiArrowLeft, FiLoader, FiCheckCircle,
-    FiSmartphone, FiMonitor, FiLifeBuoy, FiX
+    FiSmartphone, FiMonitor, FiLifeBuoy, FiX, FiShoppingCart
 } from "react-icons/fi";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-import { courseService, orderService } from "@/services/api";
+import { courseService, orderService, cartService } from "@/services/api";
 
 export default function CourseDetailsPage() {
     const params = useParams();
@@ -25,6 +25,7 @@ export default function CourseDetailsPage() {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState("");
     const [paymentLoading, setPaymentLoading] = useState(false);
+    const [addingToCart, setAddingToCart] = useState(false);
 
     useEffect(() => {
         const fetchCourse = async () => {
@@ -139,18 +140,23 @@ export default function CourseDetailsPage() {
         <>
             <Navbar />
 
-            {/* Hero Section */}
-            <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pt-28 pb-16">
-                <div className="absolute inset-0 opacity-30">
-                    <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid-pattern.svg')] bg-repeat opacity-10"></div>
-                </div>
+            {/* Hero Section - Modern Light Style */}
+            <section className="relative bg-white dark:bg-gray-950 pt-28 pb-16 overflow-hidden">
+                {/* Background Pattern - Dot Grid */}
+                <div
+                    className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
+                    style={{
+                        backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`,
+                        backgroundSize: '40px 40px'
+                    }}
+                />
 
-                <div className="container relative z-10">
+                <div className="container px-6 lg:px-12 max-w-[1400px] mx-auto relative z-10">
                     <div className="grid lg:grid-cols-3 gap-8">
                         {/* Left Content */}
                         <div className="lg:col-span-2">
-                            <Link href="/courses" className="inline-flex items-center text-gray-400 hover:text-white mb-6 transition-colors">
-                                <FiArrowLeft className="mr-2" /> Back to Courses
+                            <Link href="/courses" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mb-6 transition-colors text-sm font-medium">
+                                <FiArrowLeft className="w-4 h-4" /> Back to Courses
                             </Link>
 
                             <motion.div
@@ -158,48 +164,48 @@ export default function CourseDetailsPage() {
                                 animate={{ opacity: 1, y: 0 }}
                             >
                                 <div className="flex items-center gap-3 mb-4">
-                                    <span className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${course.level === "beginner" ? "bg-green-500/20 text-green-400" :
-                                        course.level === "intermediate" ? "bg-yellow-500/20 text-yellow-400" :
-                                            "bg-red-500/20 text-red-400"
+                                    <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${course.level === "beginner" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" :
+                                        course.level === "intermediate" ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" :
+                                            "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                                         }`}>
                                         {course.level}
                                     </span>
-                                    <span className="text-gray-400 flex items-center gap-1">
+                                    <span className="text-gray-500 dark:text-gray-400 flex items-center gap-1 text-sm">
                                         <FiGlobe className="w-4 h-4" />
                                         {course.language === "bangla" ? "বাংলা" : course.language === "english" ? "English" : "Bangla & English"}
                                     </span>
                                 </div>
 
-                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
                                     {course.title}
                                 </h1>
 
                                 {course.titleBn && (
-                                    <p className="text-xl text-gray-400 mb-4 font-bengali">{course.titleBn}</p>
+                                    <p className="text-xl text-gray-500 dark:text-gray-400 mb-4 font-bengali">{course.titleBn}</p>
                                 )}
 
-                                <p className="text-gray-300 text-lg mb-6 max-w-2xl">
+                                <p className="text-gray-600 dark:text-gray-300 text-lg mb-6 max-w-2xl">
                                     {course.shortDescription}
                                 </p>
 
                                 {/* Stats */}
-                                <div className="flex flex-wrap items-center gap-6 text-gray-300 mb-6">
-                                    <div className="flex items-center gap-1">
+                                <div className="flex flex-wrap items-center gap-6 text-gray-600 dark:text-gray-300 mb-6">
+                                    <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 rounded-full">
                                         <FiStar className="w-5 h-5 text-amber-500 fill-amber-500" />
-                                        <span className="font-bold text-white">{course.averageRating?.toFixed(1) || "0.0"}</span>
-                                        <span className="text-gray-400">({course.totalReviews || 0} reviews)</span>
+                                        <span className="font-bold text-gray-900 dark:text-white">{course.averageRating?.toFixed(1) || "0.0"}</span>
+                                        <span className="text-gray-500 text-sm">({course.totalReviews || 0} reviews)</span>
                                     </div>
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-2">
                                         <FiUsers className="w-5 h-5" />
-                                        <span>{course.totalEnrollments || 0} students</span>
+                                        <span className="font-medium">{course.totalEnrollments || 0} students</span>
                                     </div>
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-2">
                                         <FiClock className="w-5 h-5" />
-                                        <span>{Math.round((course.totalDuration || 0) / 60)} hours</span>
+                                        <span className="font-medium">{Math.round((course.totalDuration || 0) / 60)} hours</span>
                                     </div>
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-2">
                                         <FiBook className="w-5 h-5" />
-                                        <span>{course.totalLessons || 0} lessons</span>
+                                        <span className="font-medium">{course.totalLessons || 0} lessons</span>
                                     </div>
                                 </div>
 
@@ -284,8 +290,31 @@ export default function CourseDetailsPage() {
                                         </button>
                                     )}
 
-                                    <button className="btn btn-ghost w-full border border-gray-200 dark:border-gray-700">
-                                        Add to Wishlist
+                                    <button
+                                        onClick={async () => {
+                                            try {
+                                                setAddingToCart(true);
+                                                const res = await cartService.addToCart({
+                                                    productId: course._id,
+                                                    productType: 'course',
+                                                    price: course.discountPrice || course.price,
+                                                    title: course.title,
+                                                    image: course.thumbnail
+                                                });
+                                                if (res.success) {
+                                                    toast.success('Added to cart!');
+                                                }
+                                            } catch (error) {
+                                                toast.error(error.message || 'Failed to add to cart');
+                                            } finally {
+                                                setAddingToCart(false);
+                                            }
+                                        }}
+                                        disabled={addingToCart || course.isEnrolled}
+                                        className="btn btn-ghost w-full border border-gray-200 dark:border-gray-700 flex items-center justify-center gap-2"
+                                    >
+                                        {addingToCart ? <FiLoader className="w-5 h-5 animate-spin" /> : <FiShoppingCart className="w-5 h-5" />}
+                                        {addingToCart ? 'Adding...' : 'Add to Cart'}
                                     </button>
 
                                     <p className="text-center text-sm text-gray-500 mt-4">

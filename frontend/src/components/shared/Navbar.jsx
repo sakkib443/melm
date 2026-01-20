@@ -31,6 +31,7 @@ export default function Navbar() {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
     const { theme, toggleDarkMode } = useTheme();
     const { language, toggleLanguage, t } = useLanguage();
@@ -38,6 +39,11 @@ export default function Navbar() {
     const cartCount = useSelector(selectCartCount);
     const user = useSelector(selectCurrentUser);
     const isAuthenticated = useSelector(selectIsAuthenticated);
+
+    // Hydration fix - only render auth UI after mount
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Handle scroll
     useEffect(() => {
@@ -50,14 +56,27 @@ export default function Navbar() {
 
     const navLinks = [
         { nameKey: "home", href: "/" },
-        { nameKey: "design", href: "/graphics" },
+        {
+            nameKey: "products",
+            href: "/graphics",
+            hasDropdown: true,
+            dropdownItems: [
+                { name: "Graphics", nameBn: "গ্রাফিক্স", href: "/graphics", icon: "🎨" },
+                { name: "Fonts", nameBn: "ফন্ট", href: "/fonts", icon: "🔤" },
+                { name: "Audio", nameBn: "অডিও", href: "/audio", icon: "🎵" },
+                { name: "Photos", nameBn: "ফটো", href: "/photos", icon: "📷" },
+                { name: "UI Kits", nameBn: "UI কিট", href: "/ui-kits", icon: "🎯" },
+                { name: "Video Templates", nameBn: "ভিডিও", href: "/video-templates", icon: "🎬" },
+                { name: "App Templates", nameBn: "অ্যাপ", href: "/app-templates", icon: "📱" },
+            ]
+        },
         { nameKey: "course", href: "/courses" },
-        { nameKey: "pricing", href: "/pricing" },
-        { nameKey: "uiKits", href: "/ui-kits" },
+        { nameKey: "blog", href: "/blog" },
         { nameKey: "about", href: "/about" },
         { nameKey: "contact", href: "/contact" },
-        // { nameKey: "explore", href: "/marketplace", hasDropdown: true },
     ];
+
+    const [activeDropdown, setActiveDropdown] = useState(null);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -94,16 +113,56 @@ export default function Navbar() {
                         </Link>
 
                         {/* Center Navigation - Desktop */}
-                        <div className="hidden lg:flex items-center gap-2 mx-auto">
+                        <div className="hidden lg:flex items-center gap-1 mx-auto">
                             {navLinks.map((link) => (
-                                <Link
+                                <div
                                     key={link.nameKey}
-                                    href={link.href}
-                                    className="relative flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                                    className="relative"
+                                    onMouseEnter={() => link.hasDropdown && setActiveDropdown(link.nameKey)}
+                                    onMouseLeave={() => setActiveDropdown(null)}
                                 >
-                                    {t(link.nameKey)}
-                                    {link.hasDropdown && <FiChevronDown className="w-3.5 h-3.5 text-gray-400" />}
-                                </Link>
+                                    <Link
+                                        href={link.href}
+                                        className={`relative flex items-center gap-1.5 px-4 py-2 text-[14px] font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors ${activeDropdown === link.nameKey ? 'text-primary' : ''}`}
+                                    >
+                                        {t(link.nameKey)}
+                                        {link.hasDropdown && <FiChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === link.nameKey ? 'rotate-180 text-primary' : 'text-gray-400'}`} />}
+                                    </Link>
+
+                                    {/* Dropdown Menu */}
+                                    {link.hasDropdown && (
+                                        <AnimatePresence>
+                                            {activeDropdown === link.nameKey && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: 10 }}
+                                                    transition={{ duration: 0.2 }}
+                                                    className="absolute top-full left-0 pt-2 z-50"
+                                                >
+                                                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl shadow-black/10 dark:shadow-black/30 border border-gray-100 dark:border-gray-800 p-3 min-w-[280px]">
+                                                        <div className="grid grid-cols-1 gap-1">
+                                                            {link.dropdownItems?.map((item) => (
+                                                                <Link
+                                                                    key={item.href}
+                                                                    href={item.href}
+                                                                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                                                                >
+                                                                    <span className="text-xl">{item.icon}</span>
+                                                                    <div>
+                                                                        <p className="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-primary transition-colors">
+                                                                            {language === 'bn' ? item.nameBn : item.name}
+                                                                        </p>
+                                                                    </div>
+                                                                </Link>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    )}
+                                </div>
                             ))}
                         </div>
 
@@ -172,8 +231,8 @@ export default function Navbar() {
                             {/* Divider */}
                             <div className="hidden md:block w-px h-8 bg-gray-200 dark:bg-gray-700 mx-2" />
 
-                            {/* Auth / Profile */}
-                            {isAuthenticated && user ? (
+                            {/* Auth / Profile - Only render after mount to prevent hydration error */}
+                            {mounted && (isAuthenticated && user ? (
                                 <div className="relative">
                                     <motion.button
                                         onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -247,7 +306,7 @@ export default function Navbar() {
                                         {language === 'bn' ? 'শুরু করুন' : 'Get Started'}
                                     </Link>
                                 </div>
-                            )}
+                            ))}
 
                             {/* Mobile Menu Toggle */}
                             <motion.button
