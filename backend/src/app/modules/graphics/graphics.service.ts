@@ -215,6 +215,19 @@ const incrementViews = async (id: string): Promise<void> => {
 };
 
 /**
+ * Toggle like (increment likes)
+ */
+const toggleLike = async (id: string, action: 'like' | 'unlike'): Promise<IGraphics | null> => {
+    const inc = action === 'like' ? 1 : -1;
+    const result = await Graphics.findByIdAndUpdate(
+        id,
+        { $inc: { likes: inc } },
+        { new: true }
+    );
+    return result;
+};
+
+/**
  * Update status (Admin only)
  */
 const updateStatus = async (
@@ -243,5 +256,6 @@ export const GraphicsService = {
     deleteGraphics,
     getGraphicsBySeller,
     incrementViews,
+    toggleLike,
     updateStatus,
 };

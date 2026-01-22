@@ -189,7 +189,7 @@ export default function Hero() {
                             </motion.h1>
                         </motion.div>
 
-                        {/* Row 3: with + Abu Sayeed + Decoration */}
+                        {/* Row 3: with + SAKIB + Decoration */}
                         <motion.div
                             variants={itemVariants}
                             className="flex items-center gap-3 mb-6 mt-[-15px]"

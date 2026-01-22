@@ -39,6 +39,7 @@ import { CertificateRoutes } from './app/modules/certificate/certificate.route';
 import { QuizResultRoutes } from './app/modules/quizResult/quizResult.module';
 import { StripeRoutes } from './app/modules/payment/stripe.module';
 import { SSLCommerzRoutes } from './app/modules/payment/sslcommerz.module';
+import { NagadRoutes } from './app/modules/payment/nagad.module';
 import { TwoFactorRoutes } from './app/modules/auth/twoFactor.module';
 
 import { StatsRoutes } from './app/modules/stats/stats.routes';
@@ -181,6 +182,9 @@ app.use('/api/stripe', StripeRoutes);
 
 // SSLCommerz Payment routes
 app.use('/api/sslcommerz', SSLCommerzRoutes);
+
+// Nagad Payment routes
+app.use('/api/nagad', NagadRoutes);
 
 // 2FA routes
 app.use('/api/2fa', TwoFactorRoutes);

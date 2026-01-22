@@ -60,4 +60,12 @@ router.patch(
     GraphicsController.updateStatus
 );
 
+// ==================== Like Route (Public/Auth) ====================
+
+// Toggle like
+router.post(
+    '/:id/like',
+    GraphicsController.toggleLike
+);
+
 export const GraphicsRoutes = router;

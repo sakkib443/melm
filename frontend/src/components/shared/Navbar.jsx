@@ -94,7 +94,7 @@ export default function Navbar() {
                 <div className="container px-4 lg:px-8 max-w-[1600px] mx-auto">
                     <div className="flex items-center justify-between h-16">
 
-                        {/* Logo - SAID */}
+                        {/* Logo - SAKIB */}
                         <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
                             {/* Arrow Icon */}
                             <div className="flex items-center">
@@ -104,7 +104,7 @@ export default function Navbar() {
                             {/* Logo Text */}
                             <div className="flex flex-col">
                                 <span className="text-2xl font-black text-gray-900 dark:text-white tracking-widest uppercase">
-                                    SAYEED
+                                    SAKIB
                                 </span>
                                 <span className="text-[9px] font-medium text-gray-500 dark:text-gray-400 tracking-[0.15em]">
                                     Since . 2018
@@ -124,6 +124,7 @@ export default function Navbar() {
                                     <Link
                                         href={link.href}
                                         className={`relative flex items-center gap-1.5 px-4 py-2 text-[14px] font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors ${activeDropdown === link.nameKey ? 'text-primary' : ''}`}
+                                        style={{ fontFamily: 'var(--font-body)' }}
                                     >
                                         {t(link.nameKey)}
                                         {link.hasDropdown && <FiChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === link.nameKey ? 'rotate-180 text-primary' : 'text-gray-400'}`} />}
@@ -150,7 +151,7 @@ export default function Navbar() {
                                                                 >
                                                                     <span className="text-xl">{item.icon}</span>
                                                                     <div>
-                                                                        <p className="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-primary transition-colors">
+                                                                        <p className="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-primary transition-colors" style={{ fontFamily: 'var(--font-body)' }}>
                                                                             {language === 'bn' ? item.nameBn : item.name}
                                                                         </p>
                                                                     </div>
@@ -270,11 +271,25 @@ export default function Navbar() {
 
                                                 {/* Links */}
                                                 <div className="py-2">
-                                                    <DropdownLink href="/dashboard/user" icon={FiGrid} label={t('myDashboard')} />
-                                                    <DropdownLink href="/dashboard/user/courses" icon={FiBox} label={t('myLearning')} />
-                                                    <DropdownLink href="/dashboard/user/orders" icon={FiShoppingBag} label={t('orderHistory')} />
-                                                    <DropdownLink href="/dashboard/user/wishlist" icon={FiHeart} label={t('myWishlist')} />
-                                                    <DropdownLink href="/dashboard/user/profile" icon={FiSettings} label={t('accountSettings')} />
+                                                    <DropdownLink
+                                                        href={user.role === 'admin' ? "/dashboard/admin" : "/dashboard/user"}
+                                                        icon={FiGrid}
+                                                        label={t('myDashboard')}
+                                                    />
+
+                                                    {user.role !== 'admin' && (
+                                                        <>
+                                                            <DropdownLink href="/dashboard/user/courses" icon={FiBox} label={t('myLearning')} />
+                                                            <DropdownLink href="/dashboard/user/orders" icon={FiShoppingBag} label={t('orderHistory')} />
+                                                            <DropdownLink href="/dashboard/user/wishlist" icon={FiHeart} label={t('myWishlist')} />
+                                                        </>
+                                                    )}
+
+                                                    <DropdownLink
+                                                        href={user.role === 'admin' ? "/dashboard/admin/profile" : "/dashboard/user/profile"}
+                                                        icon={FiSettings}
+                                                        label={t('accountSettings')}
+                                                    />
                                                 </div>
 
                                                 {/* Logout */}

@@ -90,6 +90,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  cursor: default; /* Default cursor for background */
 }
 
 /* Universal font inheritance - ensures all elements use heading font */
@@ -97,6 +98,28 @@ body {
 *::before,
 *::after {
   font-family: inherit;
+}
+
+/* Precise Cursor Management */
+p, span, h1, h2, h3, h4, h5, h6, li, blockquote {
+  cursor: text; /* Only show text cursor on actual text */
+}
+
+a, button, [role="button"], select, input[type="submit"], input[type="button"], .clickable {
+  cursor: pointer !important;
+}
+
+input, textarea, [contenteditable="true"] {
+  cursor: text;
+}
+
+/* Prevent Caret (Text Insertion Mark) on non-editable elements */
+*:not(input):not(textarea):not([contenteditable="true"]) {
+  caret-color: transparent;
+}
+
+input, textarea, [contenteditable="true"] {
+  caret-color: var(--color-primary); /* Show theme-colored caret in inputs */
 }
 
 /* Only p tags use body font for readable text */

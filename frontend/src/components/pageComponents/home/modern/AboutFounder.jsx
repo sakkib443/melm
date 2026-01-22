@@ -56,7 +56,7 @@ export default function AboutFounder() {
                             <div className="relative rounded-[32px] overflow-hidden shadow-2xl">
                                 <img
                                     src="/images/abu-sayeed.jpg"
-                                    alt="Abu Sayeed - Founder"
+                                    alt="SAKIB - Founder"
                                     className="w-full h-[500px] object-cover object-top"
                                 />
 

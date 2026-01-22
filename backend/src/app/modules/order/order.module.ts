@@ -20,7 +20,7 @@ import { NotificationService } from '../notification/notification.module';
 // ==================== INTERFACE ====================
 export interface IOrderItem {
     product: Types.ObjectId;
-    productType: 'website' | 'software' | 'course';
+    productType: 'website' | 'software' | 'course' | 'graphics' | 'audio' | 'font' | 'photo' | 'video-template' | 'ui-kit' | 'app-template';
     title: string;
     price: number;
     image?: string;
@@ -32,10 +32,13 @@ export interface IOrder {
     user: Types.ObjectId;
     items: IOrderItem[];
     totalAmount: number;
-    paymentStatus: 'pending' | 'completed' | 'failed' | 'refunded';
+    paymentStatus: 'pending' | 'approved' | 'completed' | 'failed' | 'refunded';
     paymentMethod: string;
     transactionId?: string;
     orderDate: Date;
+    adminNote?: string;
+    approvedAt?: Date;
+    approvedBy?: Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -48,7 +51,11 @@ const orderSchema = new Schema<IOrder>(
         items: [
             {
                 product: { type: Schema.Types.ObjectId, required: true },
-                productType: { type: String, enum: ['website', 'software', 'course'], required: true },
+                productType: {
+                    type: String,
+                    enum: ['website', 'software', 'course', 'graphics', 'audio', 'font', 'photo', 'video-template', 'ui-kit', 'app-template'],
+                    required: true
+                },
                 title: { type: String, required: true },
                 price: { type: Number, required: true },
                 image: { type: String },
@@ -57,12 +64,15 @@ const orderSchema = new Schema<IOrder>(
         totalAmount: { type: Number, required: true },
         paymentStatus: {
             type: String,
-            enum: ['pending', 'completed', 'failed', 'refunded'],
+            enum: ['pending', 'approved', 'completed', 'failed', 'refunded'],
             default: 'pending',
         },
-        paymentMethod: { type: String, default: 'stripe' },
+        paymentMethod: { type: String, default: 'bkash' },
         transactionId: { type: String },
         orderDate: { type: Date, default: Date.now },
+        adminNote: { type: String },
+        approvedAt: { type: Date },
+        approvedBy: { type: Schema.Types.ObjectId, ref: 'User' },
     },
     { timestamps: true }
 );
@@ -79,14 +89,15 @@ export const createOrderValidation = z.object({
         items: z.array(
             z.object({
                 productId: z.string(),
-                productType: z.enum(['website', 'software', 'course']),
+                productType: z.enum(['website', 'software', 'course', 'graphics', 'audio', 'font', 'photo', 'video-template', 'ui-kit', 'app-template']),
                 title: z.string(),
                 price: z.number(),
                 image: z.string().optional(),
             })
         ).min(1, 'At least one item is required'),
         paymentMethod: z.string().optional(),
-        paymentStatus: z.enum(['pending', 'completed', 'failed', 'refunded']).optional(),
+        paymentStatus: z.enum(['pending', 'approved', 'completed', 'failed', 'refunded']).optional(),
+        transactionId: z.string().optional(),
     }),
 });
 
@@ -108,36 +119,44 @@ const deliverOrderItems = async (order: any, rawItems?: any[]): Promise<void> =>
 
             if (item.productType === 'course') {
                 const { EnrollmentService } = await import('../enrollment/enrollment.service');
-                const { Course } = await import('../course/course.model');
                 try {
                     await EnrollmentService.enrollStudent(userId, productId, order._id!.toString());
                     console.log(`Enrolled user ${userId} in course ${productId}`);
                 } catch (enrollError: any) {
-                    // Ignore "already enrolled" errors but log others
                     if (enrollError.statusCode !== 400) {
                         console.error(`Enrollment failed for ${productId}:`, enrollError);
                     }
                 }
             } else if (item.productType === 'website') {
                 const { Website } = await import('../website/website.model');
-                await Website.findByIdAndUpdate(productId, { $inc: { salesCount: 1 } });
-                await DownloadService.createDownloadRecord(
-                    userId,
-                    order._id!.toString(),
-                    productId,
-                    item.productType,
-                    item.title
-                );
+                await Website.findByIdAndUpdate(productId, { $inc: { salesCount: 1, downloads: 1 } });
+                await DownloadService.createDownloadRecord(userId, order._id!.toString(), productId, item.productType, item.title);
             } else if (item.productType === 'software') {
                 const { Software } = await import('../software/software.model');
-                await Software.findByIdAndUpdate(productId, { $inc: { salesCount: 1 } });
-                await DownloadService.createDownloadRecord(
-                    userId,
-                    order._id!.toString(),
-                    productId,
-                    item.productType,
-                    item.title
-                );
+                await Software.findByIdAndUpdate(productId, { $inc: { salesCount: 1, downloads: 1 } });
+                await DownloadService.createDownloadRecord(userId, order._id!.toString(), productId, item.productType, item.title);
+            } else if (item.productType === 'graphics') {
+                const { Graphics } = await import('../graphics/graphics.model');
+                await Graphics.findByIdAndUpdate(productId, { $inc: { sales: 1, downloads: 1 } });
+                await DownloadService.createDownloadRecord(userId, order._id!.toString(), productId, item.productType, item.title);
+            } else if (item.productType === 'audio') {
+                // Update audio sales
+                await DownloadService.createDownloadRecord(userId, order._id!.toString(), productId, item.productType, item.title);
+            } else if (item.productType === 'font') {
+                // Update font sales
+                await DownloadService.createDownloadRecord(userId, order._id!.toString(), productId, item.productType, item.title);
+            } else if (item.productType === 'photo') {
+                // Update photo sales
+                await DownloadService.createDownloadRecord(userId, order._id!.toString(), productId, item.productType, item.title);
+            } else if (item.productType === 'video-template') {
+                // Update video-template sales
+                await DownloadService.createDownloadRecord(userId, order._id!.toString(), productId, item.productType, item.title);
+            } else if (item.productType === 'ui-kit') {
+                // Update UI kit sales
+                await DownloadService.createDownloadRecord(userId, order._id!.toString(), productId, item.productType, item.title);
+            } else if (item.productType === 'app-template') {
+                // Update app template sales
+                await DownloadService.createDownloadRecord(userId, order._id!.toString(), productId, item.productType, item.title);
             }
         } catch (error) {
             console.error(`Failed to deliver ${item.title}:`, error);
@@ -253,16 +272,64 @@ const OrderService = {
         return order;
     },
 
+    // Admin approve order - this is when download access is granted
+    async approveOrder(orderId: string, adminId: string, adminNote?: string): Promise<IOrder> {
+        const order = await Order.findById(orderId);
+        if (!order) throw new AppError(404, 'Order not found');
+
+        if (order.paymentStatus !== 'pending') {
+            throw new AppError(400, `Cannot approve order with status: ${order.paymentStatus}`);
+        }
+
+        order.paymentStatus = 'approved';
+        order.approvedAt = new Date();
+        order.approvedBy = new Types.ObjectId(adminId);
+        if (adminNote) order.adminNote = adminNote;
+        await order.save();
+
+        // Deliver items (create download records, enroll in courses, etc.)
+        await deliverOrderItems(order);
+
+        // Notify user that their order is approved
+        try {
+            const user = await User.findById(order.user);
+            if (user) {
+                await NotificationService.createNotification({
+                    userId: order.user,
+                    type: 'order',
+                    title: 'Order Approved! 🎉',
+                    message: `Your order #${order.orderNumber} has been approved. You can now download your items.`,
+                    link: `/dashboard/user/orders/${order._id}`,
+                });
+            }
+        } catch (err) {
+            console.error('Approval notification error:', err);
+        }
+
+        return order;
+    },
+
     async getAllOrders(page = 1, limit = 10, status?: string): Promise<{ data: IOrder[]; total: number }> {
         const query: any = {};
         if (status) query.paymentStatus = status;
 
         const skip = (page - 1) * limit;
         const [orders, total] = await Promise.all([
-            Order.find(query).populate('user', 'firstName lastName email').sort({ orderDate: -1 }).skip(skip).limit(limit),
+            Order.find(query).populate('user', 'firstName lastName email avatar').sort({ orderDate: -1 }).skip(skip).limit(limit),
             Order.countDocuments(query),
         ]);
         return { data: orders, total };
+    },
+
+    async getOrderStats(): Promise<{ pending: number; approved: number; completed: number; failed: number; total: number }> {
+        const [pending, approved, completed, failed, total] = await Promise.all([
+            Order.countDocuments({ paymentStatus: 'pending' }),
+            Order.countDocuments({ paymentStatus: 'approved' }),
+            Order.countDocuments({ paymentStatus: 'completed' }),
+            Order.countDocuments({ paymentStatus: 'failed' }),
+            Order.countDocuments(),
+        ]);
+        return { pending, approved, completed, failed, total };
     },
 };
 
@@ -312,6 +379,17 @@ const OrderController = {
         const order = await OrderService.updatePaymentStatus(req.params.id, status, transactionId);
         sendResponse(res, { statusCode: 200, success: true, message: 'Order updated', data: order });
     }),
+
+    approveOrder: catchAsync(async (req: Request, res: Response) => {
+        const { adminNote } = req.body;
+        const order = await OrderService.approveOrder(req.params.id, req.user!.userId, adminNote);
+        sendResponse(res, { statusCode: 200, success: true, message: 'Order approved and delivered', data: order });
+    }),
+
+    getOrderStats: catchAsync(async (req: Request, res: Response) => {
+        const result = await OrderService.getOrderStats();
+        sendResponse(res, { statusCode: 200, success: true, message: 'Order statistics fetched', data: result });
+    }),
 };
 
 // ==================== ROUTES ====================
@@ -323,7 +401,9 @@ router.get('/my/:id', authMiddleware, OrderController.getOrderById);
 
 // Admin
 router.get('/admin/all', authMiddleware, authorizeRoles('admin'), OrderController.getAllOrders);
+router.get('/admin/stats', authMiddleware, authorizeRoles('admin'), OrderController.getOrderStats);
 router.patch('/admin/:id/status', authMiddleware, authorizeRoles('admin'), OrderController.updateOrderStatus);
+router.patch('/admin/:id/approve', authMiddleware, authorizeRoles('admin'), OrderController.approveOrder);
 
 export const OrderRoutes = router;
 export default OrderService;

@@ -59,13 +59,17 @@ export default function CreateGraphicsPage() {
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [errors, setErrors] = useState({});
 
     // Form State
     const [formData, setFormData] = useState({
         title: "",
+        titleBn: "",
         slug: "",
         description: "",
+        descriptionBn: "",
         shortDescription: "",
+        shortDescriptionBn: "",
         type: "logo",
         category: "",
         tags: [],
@@ -78,14 +82,31 @@ export default function CreateGraphicsPage() {
         layered: false,
         editable: true,
         features: [],
+        featuresBn: [],
         highlights: [],
+        highlightsBn: [],
         whatIncluded: [],
+        whatIncludedBn: [],
         isFeatured: false,
+        isBestSeller: false,
+        isTrending: false,
         mainFile: { url: "", size: 0, format: "psd" },
+        dimensions: { width: 0, height: 0, unit: "px" },
+        dpi: 300,
+        colorMode: "RGB",
+        seoTitle: "",
+        seoDescription: "",
+        seoKeywords: [],
     });
 
     const [tagInput, setTagInput] = useState("");
     const [featureInput, setFeatureInput] = useState("");
+    const [featureBnInput, setFeatureBnInput] = useState("");
+    const [highlightInput, setHighlightInput] = useState("");
+    const [highlightBnInput, setHighlightBnInput] = useState("");
+    const [includedInput, setIncludedInput] = useState("");
+    const [includedBnInput, setIncludedBnInput] = useState("");
+    const [seoKeywordInput, setSeoKeywordInput] = useState("");
 
     // Fetch categories
     useEffect(() => {
@@ -126,12 +147,39 @@ export default function CreateGraphicsPage() {
                             status: data.status || "draft",
                             fileFormats: data.fileFormats || [],
                             layered: data.layered || false,
+                            titleBn: data.titleBn || "",
+                            slug: data.slug || "",
+                            description: data.description || "",
+                            descriptionBn: data.descriptionBn || "",
+                            shortDescription: data.shortDescription || "",
+                            shortDescriptionBn: data.shortDescriptionBn || "",
+                            type: data.type || "logo",
+                            category: data.category || "",
+                            tags: data.tags || [],
+                            thumbnail: data.thumbnail || "",
+                            previewImages: data.previewImages || [],
+                            price: data.price || 0,
+                            salePrice: data.salePrice || null,
+                            status: data.status || "draft",
+                            fileFormats: data.fileFormats || [],
+                            layered: data.layered || false,
                             editable: data.editable || true,
                             features: data.features || [],
+                            featuresBn: data.featuresBn || [],
                             highlights: data.highlights || [],
+                            highlightsBn: data.highlightsBn || [],
                             whatIncluded: data.whatIncluded || [],
+                            whatIncludedBn: data.whatIncludedBn || [],
                             isFeatured: data.isFeatured || false,
+                            isBestSeller: data.isBestSeller || false,
+                            isTrending: data.isTrending || false,
                             mainFile: data.mainFile || { url: "", size: 0, format: "psd" },
+                            dimensions: data.dimensions || { width: 0, height: 0, unit: "px" },
+                            dpi: data.dpi || 300,
+                            colorMode: data.colorMode || "RGB",
+                            seoTitle: data.seoTitle || "",
+                            seoDescription: data.seoDescription || "",
+                            seoKeywords: data.seoKeywords || [],
                         });
                     }
                 } catch (error) {
@@ -187,6 +235,72 @@ export default function CreateGraphicsPage() {
         setFormData({ ...formData, features: formData.features.filter((f) => f !== feature) });
     };
 
+    const addHighlight = () => {
+        if (highlightInput.trim() && !formData.highlights.includes(highlightInput.trim())) {
+            setFormData({ ...formData, highlights: [...formData.highlights, highlightInput.trim()] });
+            setHighlightInput("");
+        }
+    };
+
+    const removeHighlight = (hl) => {
+        setFormData({ ...formData, highlights: formData.highlights.filter((h) => h !== hl) });
+    };
+
+    const addIncluded = () => {
+        if (includedInput.trim() && !formData.whatIncluded.includes(includedInput.trim())) {
+            setFormData({ ...formData, whatIncluded: [...formData.whatIncluded, includedInput.trim()] });
+            setIncludedInput("");
+        }
+    };
+
+    const removeIncluded = (item) => {
+        setFormData({ ...formData, whatIncluded: formData.whatIncluded.filter((i) => i !== item) });
+    };
+
+    const addFeatureBn = () => {
+        if (featureBnInput.trim() && !formData.featuresBn.includes(featureBnInput.trim())) {
+            setFormData({ ...formData, featuresBn: [...formData.featuresBn, featureBnInput.trim()] });
+            setFeatureBnInput("");
+        }
+    };
+
+    const removeFeatureBn = (feature) => {
+        setFormData({ ...formData, featuresBn: formData.featuresBn.filter((f) => f !== feature) });
+    };
+
+    const addHighlightBn = () => {
+        if (highlightBnInput.trim() && !formData.highlightsBn.includes(highlightBnInput.trim())) {
+            setFormData({ ...formData, highlightsBn: [...formData.highlightsBn, highlightBnInput.trim()] });
+            setHighlightBnInput("");
+        }
+    };
+
+    const removeHighlightBn = (hl) => {
+        setFormData({ ...formData, highlightsBn: formData.highlightsBn.filter((h) => h !== hl) });
+    };
+
+    const addIncludedBn = () => {
+        if (includedBnInput.trim() && !formData.whatIncludedBn.includes(includedBnInput.trim())) {
+            setFormData({ ...formData, whatIncludedBn: [...formData.whatIncludedBn, includedBnInput.trim()] });
+            setIncludedBnInput("");
+        }
+    };
+
+    const removeIncludedBn = (item) => {
+        setFormData({ ...formData, whatIncludedBn: formData.whatIncludedBn.filter((i) => i !== item) });
+    };
+
+    const addSeoKeyword = () => {
+        if (seoKeywordInput.trim() && !formData.seoKeywords.includes(seoKeywordInput.trim())) {
+            setFormData({ ...formData, seoKeywords: [...formData.seoKeywords, seoKeywordInput.trim()] });
+            setSeoKeywordInput("");
+        }
+    };
+
+    const removeSeoKeyword = (kw) => {
+        setFormData({ ...formData, seoKeywords: formData.seoKeywords.filter((k) => k !== kw) });
+    };
+
     const toggleFileFormat = (format) => {
         if (formData.fileFormats.includes(format)) {
             setFormData({ ...formData, fileFormats: formData.fileFormats.filter((f) => f !== format) });
@@ -195,33 +309,107 @@ export default function CreateGraphicsPage() {
         }
     };
 
+    const getError = (path) => {
+        // Handle nested paths like "mainFile.url"
+        if (path.includes('.')) {
+            const parts = path.split('.');
+            let current = errors;
+            for (const part of parts) {
+                if (current[part] === undefined) return "";
+                current = current[part];
+            }
+            return current;
+        }
+        return errors[path] || "";
+    };
+
+    const inputClass = (path) => {
+        const hasError = path.includes('.') ? getError(path) : errors[path];
+        return `input w-full ${hasError ? "border-red-500 focus:border-red-500 ring-red-100 dark:ring-red-900/20" : ""}`;
+    };
+
     // Submit form
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
+        setErrors({});
 
         if (!formData.title.trim()) {
+            setErrors({ title: "Title is required" });
             toast.error("Title is required");
             return;
         }
 
         setSaving(true);
         try {
+            // Clean payload for submission
             const payload = {
-                ...formData,
-                price: Number(formData.price),
-                salePrice: formData.salePrice ? Number(formData.salePrice) : null,
+                title: formData.title,
+                titleBn: formData.titleBn || undefined,
+                description: formData.description || undefined,
+                descriptionBn: formData.descriptionBn || undefined,
+                shortDescription: formData.shortDescription || undefined,
+                shortDescriptionBn: formData.shortDescriptionBn || undefined,
+                type: formData.type,
+                // Extract category ID if it's an object
+                category: typeof formData.category === 'object' ? formData.category?._id : formData.category || undefined,
+                tags: formData.tags?.length > 0 ? formData.tags : undefined,
+                thumbnail: formData.thumbnail || undefined,
+                previewImages: formData.previewImages?.length > 0 ? formData.previewImages : undefined,
+                price: Number(formData.price) || 0,
+                salePrice: formData.salePrice ? Number(formData.salePrice) : undefined,
+                status: formData.status,
+                fileFormats: formData.fileFormats?.length > 0 ? formData.fileFormats : undefined,
+                layered: formData.layered,
+                editable: formData.editable,
+                features: formData.features?.length > 0 ? formData.features : undefined,
+                featuresBn: formData.featuresBn?.length > 0 ? formData.featuresBn : undefined,
+                highlights: formData.highlights?.length > 0 ? formData.highlights : undefined,
+                highlightsBn: formData.highlightsBn?.length > 0 ? formData.highlightsBn : undefined,
+                whatIncluded: formData.whatIncluded?.length > 0 ? formData.whatIncluded : undefined,
+                whatIncludedBn: formData.whatIncludedBn?.length > 0 ? formData.whatIncludedBn : undefined,
+                isFeatured: formData.isFeatured,
+                isBestSeller: formData.isBestSeller,
+                isTrending: formData.isTrending,
+                mainFile: formData.mainFile?.url ? formData.mainFile : undefined,
+                dimensions: (formData.dimensions?.width || formData.dimensions?.height) ? formData.dimensions : undefined,
+                dpi: formData.dpi || undefined,
+                colorMode: formData.colorMode || undefined,
+                seoTitle: formData.seoTitle || undefined,
+                seoDescription: formData.seoDescription || undefined,
+                seoKeywords: formData.seoKeywords?.length > 0 ? formData.seoKeywords : undefined,
             };
 
+            // Remove undefined values
+            Object.keys(payload).forEach(key => {
+                if (payload[key] === undefined) {
+                    delete payload[key];
+                }
+            });
+
+            let response;
             if (isEditMode) {
-                await graphicsService.update(editId, payload);
-                toast.success("Graphics updated successfully!");
+                response = await graphicsService.update(editId, payload);
             } else {
-                await graphicsService.create(payload);
-                toast.success("Graphics created successfully!");
+                response = await graphicsService.create(payload);
             }
-            router.push("/dashboard/admin/products/graphics");
+
+            if (response.success) {
+                toast.success(isEditMode ? "Graphics updated successfully!" : "Graphics created successfully!");
+                router.push("/dashboard/admin/products/graphics");
+            }
         } catch (error) {
-            toast.error(error.message || "Failed to save graphics");
+            console.error("Submission error:", error);
+            // Handle structured validation errors from backend
+            if (error.errorSources) {
+                const fieldErrors = {};
+                error.errorSources.forEach(err => {
+                    fieldErrors[err.path] = err.message;
+                });
+                setErrors(fieldErrors);
+                toast.error("Please fix the errors in the form");
+            } else {
+                toast.error(error.message || "Failed to save graphics");
+            }
         } finally {
             setSaving(false);
         }
@@ -287,19 +475,35 @@ export default function CreateGraphicsPage() {
                                 <FiImage size={16} /> Basic Information
                             </h2>
                             <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Title *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="title"
-                                        value={formData.title}
-                                        onChange={handleTitleChange}
-                                        className="input w-full"
-                                        placeholder="Enter graphics title"
-                                        required
-                                    />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Title (English) <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="title"
+                                            value={formData.title}
+                                            onChange={handleTitleChange}
+                                            className={inputClass("title")}
+                                            placeholder="Enter graphics title in English"
+                                            required
+                                        />
+                                        {getError("title") && <p className="mt-1 text-xs text-red-500">{getError("title")}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Title (Bengali)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="titleBn"
+                                            value={formData.titleBn}
+                                            onChange={handleChange}
+                                            className="input w-full"
+                                            placeholder="বাংলায় টাইটেল লিখুন"
+                                        />
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -310,34 +514,64 @@ export default function CreateGraphicsPage() {
                                         name="slug"
                                         value={formData.slug}
                                         onChange={handleChange}
-                                        className="input w-full"
+                                        className={inputClass("slug")}
                                         placeholder="auto-generated-slug"
                                     />
+                                    {getError("slug") && <p className="mt-1 text-xs text-red-500">{getError("slug")}</p>}
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Short Description (English)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="shortDescription"
+                                            value={formData.shortDescription}
+                                            onChange={handleChange}
+                                            className="input w-full"
+                                            placeholder="Brief description in English"
+                                            maxLength={200}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Short Description (Bengali)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="shortDescriptionBn"
+                                            value={formData.shortDescriptionBn}
+                                            onChange={handleChange}
+                                            className="input w-full"
+                                            placeholder="বাংলায় ছোট বিবরণ লিখুন"
+                                            maxLength={300}
+                                        />
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Short Description
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="shortDescription"
-                                        value={formData.shortDescription}
-                                        onChange={handleChange}
-                                        className="input w-full"
-                                        placeholder="Brief description (max 200 characters)"
-                                        maxLength={200}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Full Description
+                                        Full Description (English)
                                     </label>
                                     <textarea
                                         name="description"
                                         value={formData.description}
                                         onChange={handleChange}
-                                        className="input w-full min-h-[150px]"
-                                        placeholder="Detailed description of the graphics..."
+                                        className={inputClass("description")}
+                                        placeholder="Detailed description in English..."
+                                    />
+                                    {getError("description") && <p className="mt-1 text-xs text-red-500">{getError("description")}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Full Description (Bengali)
+                                    </label>
+                                    <textarea
+                                        name="descriptionBn"
+                                        value={formData.descriptionBn}
+                                        onChange={handleChange}
+                                        className="input w-full h-32"
+                                        placeholder="বাংলায় বিস্তারিত বিবরণ লিখুন..."
                                     />
                                 </div>
                             </div>
@@ -358,9 +592,10 @@ export default function CreateGraphicsPage() {
                                         name="thumbnail"
                                         value={formData.thumbnail}
                                         onChange={handleChange}
-                                        className="input w-full"
+                                        className={inputClass("thumbnail")}
                                         placeholder="https://example.com/image.jpg"
                                     />
+                                    {getError("thumbnail") && <p className="mt-1 text-xs text-red-500">{getError("thumbnail")}</p>}
                                 </div>
                                 {formData.thumbnail && (
                                     <div className="w-32 h-24 rounded-md overflow-hidden border border-gray-200 dark:border-gray-700">
@@ -378,9 +613,132 @@ export default function CreateGraphicsPage() {
                                             ...formData,
                                             mainFile: { ...formData.mainFile, url: e.target.value }
                                         })}
-                                        className="input w-full"
+                                        className={inputClass("mainFile.url")}
                                         placeholder="https://example.com/file.zip"
                                     />
+                                    {getError("mainFile.url") && <p className="mt-1 text-xs text-red-500">{getError("mainFile.url")}</p>}
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Size (MB)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={formData.mainFile.size / (1024 * 1024) || ""}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                mainFile: { ...formData.mainFile, size: Number(e.target.value) * 1024 * 1024 }
+                                            })}
+                                            className={inputClass("mainFile.size")}
+                                            placeholder="0"
+                                            step="0.01"
+                                        />
+                                        {getError("mainFile.size") && <p className="mt-1 text-xs text-red-500">{getError("mainFile.size")}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Format
+                                        </label>
+                                        <select
+                                            value={formData.mainFile.format}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                mainFile: { ...formData.mainFile, format: e.target.value }
+                                            })}
+                                            className="input w-full"
+                                        >
+                                            {FILE_FORMATS.map((f) => (
+                                                <option key={f.value} value={f.value}>{f.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Technical Details */}
+                        <div className="card border border-gray-200 dark:border-gray-700 p-5">
+                            <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                                <FiLayers size={16} /> Technical Details
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Width
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={formData.dimensions.width}
+                                        onChange={(e) => setFormData({
+                                            ...formData,
+                                            dimensions: { ...formData.dimensions, width: Number(e.target.value) }
+                                        })}
+                                        className={inputClass("dimensions.width")}
+                                        placeholder="0"
+                                    />
+                                    {getError("dimensions.width") && <p className="mt-1 text-xs text-red-500">{getError("dimensions.width")}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Height
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={formData.dimensions.height}
+                                        onChange={(e) => setFormData({
+                                            ...formData,
+                                            dimensions: { ...formData.dimensions, height: Number(e.target.value) }
+                                        })}
+                                        className={inputClass("dimensions.height")}
+                                        placeholder="0"
+                                    />
+                                    {getError("dimensions.height") && <p className="mt-1 text-xs text-red-500">{getError("dimensions.height")}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Unit
+                                    </label>
+                                    <select
+                                        value={formData.dimensions.unit}
+                                        onChange={(e) => setFormData({
+                                            ...formData,
+                                            dimensions: { ...formData.dimensions, unit: e.target.value }
+                                        })}
+                                        className="input w-full"
+                                    >
+                                        <option value="px">Pixels (px)</option>
+                                        <option value="in">Inches (in)</option>
+                                        <option value="cm">Centimeters (cm)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        DPI (Resolution)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="dpi"
+                                        value={formData.dpi}
+                                        onChange={handleChange}
+                                        className="input w-full"
+                                        placeholder="300"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Color Mode
+                                    </label>
+                                    <select
+                                        name="colorMode"
+                                        value={formData.colorMode}
+                                        onChange={handleChange}
+                                        className="input w-full"
+                                    >
+                                        <option value="RGB">RGB</option>
+                                        <option value="CMYK">CMYK</option>
+                                        <option value="Grayscale">Grayscale</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -390,7 +748,7 @@ export default function CreateGraphicsPage() {
                             <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                                 <FiTag size={16} /> Tags & Features
                             </h2>
-                            <div className="space-y-4">
+                            <div className="space-y-6">
                                 {/* Tags */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -424,36 +782,189 @@ export default function CreateGraphicsPage() {
                                     </div>
                                 </div>
 
-                                {/* Features */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Features
-                                    </label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            value={featureInput}
-                                            onChange={(e) => setFeatureInput(e.target.value)}
-                                            onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addFeature())}
-                                            className="input flex-1"
-                                            placeholder="Add a feature"
-                                        />
-                                        <button type="button" onClick={addFeature} className="btn btn-ghost">
-                                            <FiPlus />
-                                        </button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                                    {/* Features (EN) */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Features (English)
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={featureInput}
+                                                onChange={(e) => setFeatureInput(e.target.value)}
+                                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addFeature())}
+                                                className="input flex-1"
+                                                placeholder="Add a feature"
+                                            />
+                                            <button type="button" onClick={addFeature} className="btn btn-ghost">
+                                                <FiPlus />
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {formData.features.map((feature) => (
+                                                <span key={feature} className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs flex items-center gap-1">
+                                                    {feature}
+                                                    <button type="button" onClick={() => removeFeature(feature)} className="hover:text-red-500">
+                                                        <FiX size={12} />
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                        {formData.features.map((feature) => (
-                                            <span
-                                                key={feature}
-                                                className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs flex items-center gap-1"
-                                            >
-                                                {feature}
-                                                <button type="button" onClick={() => removeFeature(feature)} className="hover:text-red-500">
-                                                    <FiX size={12} />
-                                                </button>
-                                            </span>
-                                        ))}
+
+                                    {/* Features (BN) */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 font-bangla">
+                                            বৈশিষ্ট্য (Bengali)
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={featureBnInput}
+                                                onChange={(e) => setFeatureBnInput(e.target.value)}
+                                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addFeatureBn())}
+                                                className="input flex-1"
+                                                placeholder="একটি বৈশিষ্ট্য যোগ করুন"
+                                            />
+                                            <button type="button" onClick={addFeatureBn} className="btn btn-ghost">
+                                                <FiPlus />
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {formData.featuresBn.map((feature) => (
+                                                <span key={feature} className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs flex items-center gap-1">
+                                                    {feature}
+                                                    <button type="button" onClick={() => removeFeatureBn(feature)} className="hover:text-red-500">
+                                                        <FiX size={12} />
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                                    {/* Highlights (EN) */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Highlights (English)
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={highlightInput}
+                                                onChange={(e) => setHighlightInput(e.target.value)}
+                                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addHighlight())}
+                                                className="input flex-1"
+                                                placeholder="Add a highlight"
+                                            />
+                                            <button type="button" onClick={addHighlight} className="btn btn-ghost">
+                                                <FiPlus />
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {formData.highlights.map((h) => (
+                                                <span key={h} className="px-2 py-1 bg-amber-100 text-amber-700 rounded-md text-xs flex items-center gap-1">
+                                                    {h}
+                                                    <button type="button" onClick={() => removeHighlight(h)} className="hover:text-red-500">
+                                                        <FiX size={12} />
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Highlights (BN) */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 font-bangla">
+                                            হাইলাইটস (Bengali)
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={highlightBnInput}
+                                                onChange={(e) => setHighlightBnInput(e.target.value)}
+                                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addHighlightBn())}
+                                                className="input flex-1"
+                                                placeholder="একটি হাইলাইট যোগ করুন"
+                                            />
+                                            <button type="button" onClick={addHighlightBn} className="btn btn-ghost">
+                                                <FiPlus />
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {formData.highlightsBn.map((h) => (
+                                                <span key={h} className="px-2 py-1 bg-amber-100 text-amber-700 rounded-md text-xs flex items-center gap-1">
+                                                    {h}
+                                                    <button type="button" onClick={() => removeHighlightBn(h)} className="hover:text-red-500">
+                                                        <FiX size={12} />
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                                    {/* Included (EN) */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            What's Included (English)
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={includedInput}
+                                                onChange={(e) => setIncludedInput(e.target.value)}
+                                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addIncluded())}
+                                                className="input flex-1"
+                                                placeholder="Add an item"
+                                            />
+                                            <button type="button" onClick={addIncluded} className="btn btn-ghost">
+                                                <FiPlus />
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {formData.whatIncluded.map((item) => (
+                                                <span key={item} className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-xs flex items-center gap-1">
+                                                    {item}
+                                                    <button type="button" onClick={() => removeIncluded(item)} className="hover:text-red-500">
+                                                        <FiX size={12} />
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Included (BN) */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 font-bangla">
+                                            যা অন্তর্ভুক্ত (Bengali)
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={includedBnInput}
+                                                onChange={(e) => setIncludedBnInput(e.target.value)}
+                                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addIncludedBn())}
+                                                className="input flex-1"
+                                                placeholder="একটি ফাইল যোগ করুন"
+                                            />
+                                            <button type="button" onClick={addIncludedBn} className="btn btn-ghost">
+                                                <FiPlus />
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {formData.whatIncludedBn.map((item) => (
+                                                <span key={item} className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-xs flex items-center gap-1">
+                                                    {item}
+                                                    <button type="button" onClick={() => removeIncludedBn(item)} className="hover:text-red-500">
+                                                        <FiX size={12} />
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -469,14 +980,76 @@ export default function CreateGraphicsPage() {
                                                 type="button"
                                                 onClick={() => toggleFileFormat(format.value)}
                                                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${formData.fileFormats.includes(format.value)
-                                                        ? "bg-primary text-white"
-                                                        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                                                    ? "bg-primary text-white"
+                                                    : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                                                     }`}
                                             >
                                                 {format.label}
                                             </button>
                                         ))}
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* SEO Settings */}
+                    <div className="card border border-gray-200 dark:border-gray-700 p-5">
+                        <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                            <FiTag size={16} /> SEO Settings
+                        </h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    SEO Title
+                                </label>
+                                <input
+                                    type="text"
+                                    name="seoTitle"
+                                    value={formData.seoTitle}
+                                    onChange={handleChange}
+                                    className="input w-full"
+                                    placeholder="Optimize title for search engines"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    SEO Description
+                                </label>
+                                <textarea
+                                    name="seoDescription"
+                                    value={formData.seoDescription}
+                                    onChange={handleChange}
+                                    className="input w-full min-h-[100px]"
+                                    placeholder="SEO meta description..."
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    SEO Keywords
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={seoKeywordInput}
+                                        onChange={(e) => setSeoKeywordInput(e.target.value)}
+                                        onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addSeoKeyword())}
+                                        className="input flex-1"
+                                        placeholder="Add a keyword"
+                                    />
+                                    <button type="button" onClick={addSeoKeyword} className="btn btn-ghost">
+                                        <FiPlus />
+                                    </button>
+                                </div>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                    {formData.seoKeywords.map((kw) => (
+                                        <span key={kw} className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs flex items-center gap-1">
+                                            {kw}
+                                            <button type="button" onClick={() => removeSeoKeyword(kw)} className="hover:text-red-500">
+                                                <FiX size={12} />
+                                            </button>
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -515,7 +1088,7 @@ export default function CreateGraphicsPage() {
                                         name="type"
                                         value={formData.type}
                                         onChange={handleChange}
-                                        className="input w-full"
+                                        className={inputClass("type")}
                                     >
                                         {GRAPHICS_TYPES.map((opt) => (
                                             <option key={opt.value} value={opt.value}>
@@ -523,6 +1096,7 @@ export default function CreateGraphicsPage() {
                                             </option>
                                         ))}
                                     </select>
+                                    {getError("type") && <p className="mt-1 text-xs text-red-500">{getError("type")}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -532,7 +1106,7 @@ export default function CreateGraphicsPage() {
                                         name="category"
                                         value={formData.category}
                                         onChange={handleChange}
-                                        className="input w-full"
+                                        className={inputClass("category")}
                                     >
                                         <option value="">Select Category</option>
                                         {categories.map((cat) => (
@@ -541,6 +1115,7 @@ export default function CreateGraphicsPage() {
                                             </option>
                                         ))}
                                     </select>
+                                    {getError("category") && <p className="mt-1 text-xs text-red-500">{getError("category")}</p>}
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <input
@@ -553,6 +1128,32 @@ export default function CreateGraphicsPage() {
                                     />
                                     <label htmlFor="isFeatured" className="text-sm text-gray-600 dark:text-gray-400">
                                         Featured Product
+                                    </label>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="isBestSeller"
+                                        name="isBestSeller"
+                                        checked={formData.isBestSeller}
+                                        onChange={handleChange}
+                                        className="w-4 h-4 rounded border-gray-300"
+                                    />
+                                    <label htmlFor="isBestSeller" className="text-sm text-gray-600 dark:text-gray-400">
+                                        Best Seller
+                                    </label>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="isTrending"
+                                        name="isTrending"
+                                        checked={formData.isTrending}
+                                        onChange={handleChange}
+                                        className="w-4 h-4 rounded border-gray-300"
+                                    />
+                                    <label htmlFor="isTrending" className="text-sm text-gray-600 dark:text-gray-400">
+                                        Trending Product
                                     </label>
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -592,18 +1193,18 @@ export default function CreateGraphicsPage() {
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Regular Price (৳) *
+                                        Regular Price (৳)
                                     </label>
                                     <input
                                         type="number"
                                         name="price"
                                         value={formData.price}
                                         onChange={handleChange}
-                                        className="input w-full"
+                                        className={inputClass("price")}
                                         placeholder="0"
                                         min="0"
-                                        required
                                     />
+                                    {getError("price") && <p className="mt-1 text-xs text-red-500">{getError("price")}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -614,10 +1215,11 @@ export default function CreateGraphicsPage() {
                                         name="salePrice"
                                         value={formData.salePrice || ""}
                                         onChange={handleChange}
-                                        className="input w-full"
+                                        className={inputClass("salePrice")}
                                         placeholder="Leave empty if no sale"
                                         min="0"
                                     />
+                                    {getError("salePrice") && <p className="mt-1 text-xs text-red-500">{getError("salePrice")}</p>}
                                 </div>
                                 {formData.salePrice && formData.price > 0 && (
                                     <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-md">

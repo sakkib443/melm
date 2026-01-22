@@ -122,6 +122,21 @@ const updateStatus = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+// Toggle Like
+const toggleLike = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { action } = req.body; // 'like' or 'unlike'
+
+    const result = await GraphicsService.toggleLike(id, action);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: `Graphics ${action}d successfully`,
+        data: { likes: result?.likes || 0 },
+    });
+});
+
 export const GraphicsController = {
     createGraphics,
     getAllGraphics,
@@ -130,4 +145,5 @@ export const GraphicsController = {
     deleteGraphics,
     getMyGraphics,
     updateStatus,
+    toggleLike,
 };
