@@ -155,7 +155,13 @@ export default function UserDownloadsPage() {
                                             Download <FiDownload />
                                         </button>
                                         <Link
-                                            href={`/products/${item.product?.slug || item.product?._id}`}
+                                            href={`/${item.productType === 'graphics' ? 'graphics' :
+                                                    item.productType === 'audio' ? 'audio' :
+                                                        item.productType === 'video-template' ? 'video-templates' :
+                                                            item.productType === 'ui-kit' ? 'ui-kits' :
+                                                                item.productType === 'app-template' ? 'app-templates' :
+                                                                    item.productType + 's'
+                                                }/${item.product?.slug || item.product?._id}`}
                                             className="w-14 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 text-gray-400 hover:text-primary rounded-2xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all"
                                             title="View Product"
                                         >

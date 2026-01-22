@@ -59,9 +59,12 @@ export interface IGraphics {
 
     // Basic Info
     title: string;
+    titleBn?: string;
     slug: string;
     description: string;
+    descriptionBn?: string;
     shortDescription: string;
+    shortDescriptionBn?: string;
 
     // Seller
     seller: Types.ObjectId;
@@ -119,12 +122,16 @@ export interface IGraphics {
 
     // Features
     features: string[];
+    featuresBn?: string[];
     highlights: string[];
+    highlightsBn?: string[];
     whatIncluded: string[];
+    whatIncludedBn?: string[];
 
     // Stats
     views: number;
     downloads: number;
+    likes: number;
     sales: number;
     rating: number;
     reviewCount: number;

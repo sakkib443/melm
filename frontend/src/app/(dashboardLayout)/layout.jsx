@@ -236,7 +236,7 @@ function SidebarItem({ item, isCollapsed }) {
                                         }`}
                                 >
                                     {child.icon && <child.icon className="w-4 h-4" />}
-                                    {child.name}
+                                    <span style={{ fontFamily: "var(--font-body)" }}>{child.name}</span>
                                 </Link>
                             ))}
                         </motion.div>
@@ -260,7 +260,7 @@ function SidebarItem({ item, isCollapsed }) {
                 } transition-all`}>
                 <item.icon className={`w-[18px] h-[18px] ${isActive ? "text-white" : "text-gray-500 dark:text-gray-400"}`} />
             </div>
-            {!isCollapsed && <span className="font-medium text-sm">{item.name}</span>}
+            {!isCollapsed && <span className="font-medium text-sm" style={{ fontFamily: "var(--font-body)" }}>{item.name}</span>}
         </Link>
     );
 }

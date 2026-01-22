@@ -21,200 +21,116 @@ import Navbar from "@/components/shared/Navbar";
 import { useLanguage } from "@/context/LanguageContext";
 import { graphicsService } from "@/services/api";
 
-// Mock data for demo
-const mockGraphics = [
-    {
-        _id: "1",
-        title: "Premium Logo Template Bundle",
-        titleBn: "প্রিমিয়াম লোগো টেমপ্লেট বান্ডল",
-        slug: "premium-logo-template-bundle",
-        thumbnail: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800",
-        price: 2999,
-        salePrice: 1999,
-        category: "Logo",
-        categoryBn: "লোগো",
-        status: "published",
-        downloads: 234,
-        rating: 4.8,
-        reviews: 45,
-        likes: 89,
-        author: "Creative Studio",
-        tags: ["logo", "branding", "business"],
-    },
-    {
-        _id: "2",
-        title: "Social Media Graphics Pack",
-        titleBn: "সোশ্যাল মিডিয়া গ্রাফিক্স প্যাক",
-        slug: "social-media-graphics-pack",
-        thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800",
-        price: 1499,
-        salePrice: null,
-        category: "Social Media",
-        categoryBn: "সোশ্যাল মিডিয়া",
-        status: "published",
-        downloads: 567,
-        rating: 4.9,
-        reviews: 89,
-        likes: 156,
-        author: "Design Lab",
-        tags: ["social", "instagram", "facebook"],
-    },
-    {
-        _id: "3",
-        title: "Business Card Designs Collection",
-        titleBn: "বিজনেস কার্ড ডিজাইন কালেকশন",
-        slug: "business-card-designs",
-        thumbnail: "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=800",
-        price: 999,
-        salePrice: 499,
-        category: "Business Card",
-        categoryBn: "বিজনেস কার্ড",
-        status: "published",
-        downloads: 123,
-        rating: 4.5,
-        reviews: 23,
-        likes: 45,
-        author: "Print Pro",
-        tags: ["business", "card", "print"],
-    },
-    {
-        _id: "4",
-        title: "Flyer & Poster Templates",
-        titleBn: "ফ্লায়ার এবং পোস্টার টেমপ্লেট",
-        slug: "flyer-poster-templates",
-        thumbnail: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800",
-        price: 1999,
-        salePrice: null,
-        category: "Flyer",
-        categoryBn: "ফ্লায়ার",
-        status: "published",
-        downloads: 345,
-        rating: 4.7,
-        reviews: 67,
-        likes: 78,
-        author: "Event Graphics",
-        tags: ["flyer", "poster", "event"],
-    },
-    {
-        _id: "5",
-        title: "Modern Resume Templates",
-        titleBn: "আধুনিক রেজিউমে টেমপ্লেট",
-        slug: "modern-resume-templates",
-        thumbnail: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800",
-        price: 799,
-        salePrice: 599,
-        category: "Resume",
-        categoryBn: "রেজিউমে",
-        status: "published",
-        downloads: 890,
-        rating: 4.9,
-        reviews: 134,
-        likes: 267,
-        author: "Career Design",
-        tags: ["resume", "cv", "job"],
-    },
-    {
-        _id: "6",
-        title: "Instagram Story Templates",
-        titleBn: "ইনস্টাগ্রাম স্টোরি টেমপ্লেট",
-        slug: "instagram-story-templates",
-        thumbnail: "https://images.unsplash.com/photo-1611262588024-d12430b98920?w=800",
-        price: 1299,
-        salePrice: null,
-        category: "Social Media",
-        categoryBn: "সোশ্যাল মিডিয়া",
-        status: "published",
-        downloads: 456,
-        rating: 4.6,
-        reviews: 56,
-        likes: 123,
-        author: "Insta Pro",
-        tags: ["instagram", "story", "social"],
-    },
-    {
-        _id: "7",
-        title: "Wedding Invitation Cards",
-        titleBn: "বিয়ের দাওয়াত কার্ড",
-        slug: "wedding-invitation-cards",
-        thumbnail: "https://images.unsplash.com/photo-1607861716497-e65ab29fc7ac?w=800",
-        price: 2499,
-        salePrice: 1899,
-        category: "Invitation",
-        categoryBn: "দাওয়াত",
-        status: "published",
-        downloads: 234,
-        rating: 4.8,
-        reviews: 78,
-        likes: 189,
-        author: "Wedding Studio",
-        tags: ["wedding", "invitation", "card"],
-    },
-    {
-        _id: "8",
-        title: "YouTube Thumbnail Pack",
-        titleBn: "ইউটিউব থাম্বনেইল প্যাক",
-        slug: "youtube-thumbnail-pack",
-        thumbnail: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=800",
-        price: 999,
-        salePrice: null,
-        category: "YouTube",
-        categoryBn: "ইউটিউব",
-        status: "published",
-        downloads: 678,
-        rating: 4.7,
-        reviews: 89,
-        likes: 234,
-        author: "Tube Graphics",
-        tags: ["youtube", "thumbnail", "video"],
-    },
-];
-
-const categories = [
-    { name: "All", nameBn: "সব", count: 120 },
-    { name: "Logo", nameBn: "লোগো", count: 45 },
-    { name: "Social Media", nameBn: "সোশ্যাল মিডিয়া", count: 32 },
-    { name: "Business Card", nameBn: "বিজনেস কার্ড", count: 28 },
-    { name: "Flyer", nameBn: "ফ্লায়ার", count: 24 },
-    { name: "Resume", nameBn: "রেজিউমে", count: 18 },
-    { name: "Invitation", nameBn: "দাওয়াত", count: 15 },
-    { name: "YouTube", nameBn: "ইউটিউব", count: 12 },
-];
-
 export default function GraphicsPage() {
-    const { t, language } = useLanguage();
-    const [graphics, setGraphics] = useState(mockGraphics);
-    const [loading, setLoading] = useState(false);
+    const { language } = useLanguage();
+    const [graphics, setGraphics] = useState([]);
+    const [categories, setCategories] = useState([{ name: "All", nameBn: "সব", count: 0 }]);
+    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [viewMode, setViewMode] = useState("grid");
     const [sortBy, setSortBy] = useState("popular");
-    const [priceRange, setPriceRange] = useState([0, 10000]);
     const [showFilters, setShowFilters] = useState(false);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalResults, setTotalResults] = useState(0);
 
-    const filteredGraphics = graphics.filter((item) => {
-        const title = language === 'bn' ? item.titleBn : item.title;
-        const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
-        const matchesPrice = item.price >= priceRange[0] && item.price <= priceRange[1];
-        return matchesSearch && matchesCategory && matchesPrice;
-    });
+    // Fetch Categories and initial counts
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                // Fetch published graphics to extract categories and counts
+                // In a real app, you might have a dedicated category stats endpoint
+                const res = await graphicsService.getAll("?status=published&limit=1000");
+                if (res?.data) {
+                    const catMap = {
+                        "All": { name: "All", nameBn: "সব", count: res.meta.total }
+                    };
 
-    const sortedGraphics = [...filteredGraphics].sort((a, b) => {
-        switch (sortBy) {
-            case "popular":
-                return b.downloads - a.downloads;
-            case "newest":
-                return b._id.localeCompare(a._id);
-            case "price-low":
-                return (a.salePrice || a.price) - (b.salePrice || b.price);
-            case "price-high":
-                return (b.salePrice || b.price) - (a.salePrice || a.price);
-            case "rating":
-                return b.rating - a.rating;
-            default:
-                return 0;
+                    res.data.forEach(item => {
+                        if (item.category) {
+                            const catName = item.category.name;
+                            if (!catMap[catName]) {
+                                catMap[catName] = {
+                                    name: catName,
+                                    nameBn: item.category.nameBn || catName,
+                                    count: 0,
+                                    _id: item.category._id
+                                };
+                            }
+                            catMap[catName].count++;
+                        }
+                    });
+                    setCategories(Object.values(catMap));
+                }
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // Fetch Graphics
+    const fetchGraphics = async (isLoadMore = false) => {
+        if (!isLoadMore) setLoading(true);
+        try {
+            let query = `?status=published&page=${page}&limit=12`;
+
+            // Sorting mapping
+            if (sortBy === "popular") query += "&sortBy=downloads&sortOrder=desc";
+            if (sortBy === "newest") query += "&sortBy=createdAt&sortOrder=desc";
+            if (sortBy === "price-low") query += "&sortBy=price&sortOrder=asc";
+            if (sortBy === "price-high") query += "&sortBy=price&sortOrder=desc";
+            if (sortBy === "rating") query += "&sortBy=rating&sortOrder=desc";
+
+            // Category filter
+            if (selectedCategory !== "All") {
+                const cat = categories.find(c => c.name === selectedCategory);
+                if (cat?._id) query += `&category=${cat._id}`;
+            }
+
+            // Search query
+            if (searchQuery) query += `&searchTerm=${searchQuery}`;
+
+            const res = await graphicsService.getAll(query);
+            if (res?.data) {
+                if (isLoadMore) {
+                    setGraphics(prev => [...prev, ...res.data]);
+                } else {
+                    setGraphics(res.data);
+                }
+                setTotalPages(res.meta.totalPages);
+                setTotalResults(res.meta.total);
+            }
+        } catch (error) {
+            console.error("Error fetching graphics:", error);
+        } finally {
+            setLoading(false);
         }
-    });
+    };
+
+    // Refetch when filters change
+    useEffect(() => {
+        setPage(1);
+        fetchGraphics(false);
+    }, [selectedCategory, sortBy, searchQuery]);
+
+    // Fetch more for pagination
+    useEffect(() => {
+        if (page > 1) {
+            fetchGraphics(true);
+        }
+    }, [page]);
+
+    const handleLoadMore = () => {
+        if (page < totalPages) {
+            setPage(prev => prev + 1);
+        }
+    };
+
+    // Helper functions for localized content
+    const getTitle = (item) => (language === 'bn' ? (item.titleBn || item.title) : item.title);
+    const getCatName = (item) => (language === 'bn' ? (item.category?.nameBn || item.category?.name || "Graphics") : (item.category?.name || "Graphics"));
 
     return (
         <div className="min-h-screen bg-white dark:bg-gray-950">
@@ -222,7 +138,6 @@ export default function GraphicsPage() {
 
             {/* Hero Section */}
             <section className="relative pt-32 pb-16 overflow-hidden">
-                {/* Background Pattern */}
                 <div
                     className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
                     style={{
@@ -237,7 +152,6 @@ export default function GraphicsPage() {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                     >
-                        {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6">
                             <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                             <span className="text-sm font-bold text-primary uppercase tracking-wider">
@@ -245,21 +159,18 @@ export default function GraphicsPage() {
                             </span>
                         </div>
 
-                        {/* Title */}
                         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white font-heading uppercase leading-[0.9] mb-6">
                             {language === 'bn' ? 'গ্রাফিক্স' : 'GRAPHICS'}
                             <br />
                             <span className="text-primary">{language === 'bn' ? 'টেমপ্লেট।' : 'TEMPLATES.'}</span>
                         </h1>
 
-                        {/* Description */}
                         <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-10">
                             {language === 'bn'
                                 ? 'আপনার প্রকল্পের জন্য প্রিমিয়াম গ্রাফিক ডিজাইন টেমপ্লেট আবিষ্কার করুন। লোগো, সোশ্যাল মিডিয়া, বিজনেস কার্ড এবং আরও অনেক কিছু।'
                                 : 'Discover premium graphic design templates for your projects. Logos, social media, business cards, and much more.'}
                         </p>
 
-                        {/* Search Bar */}
                         <div className="relative max-w-2xl mx-auto">
                             <FiSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                             <input
@@ -274,20 +185,19 @@ export default function GraphicsPage() {
                             </button>
                         </div>
 
-                        {/* Stats */}
                         <div className="flex items-center justify-center gap-8 mt-10">
                             <div className="text-center">
-                                <span className="text-3xl font-bold text-gray-900 dark:text-white font-heading">{language === 'bn' ? '৫K+' : '5K+'}</span>
+                                <span className="text-3xl font-bold text-gray-900 dark:text-white font-heading">{totalResults}+</span>
                                 <p className="text-sm text-gray-500">{language === 'bn' ? 'টেমপ্লেট' : 'Templates'}</p>
                             </div>
                             <div className="w-px h-10 bg-gray-200 dark:bg-gray-800" />
                             <div className="text-center">
-                                <span className="text-3xl font-bold text-gray-900 dark:text-white font-heading">{language === 'bn' ? '৫০K+' : '50K+'}</span>
+                                <span className="text-3xl font-bold text-gray-900 dark:text-white font-heading">50K+</span>
                                 <p className="text-sm text-gray-500">{language === 'bn' ? 'ডাউনলোড' : 'Downloads'}</p>
                             </div>
                             <div className="w-px h-10 bg-gray-200 dark:bg-gray-800" />
                             <div className="text-center">
-                                <span className="text-3xl font-bold text-gray-900 dark:text-white font-heading">{language === 'bn' ? '৪.৯' : '4.9'}</span>
+                                <span className="text-3xl font-bold text-gray-900 dark:text-white font-heading">4.9</span>
                                 <p className="text-sm text-gray-500">{language === 'bn' ? 'রেটিং' : 'Rating'}</p>
                             </div>
                         </div>
@@ -319,16 +229,14 @@ export default function GraphicsPage() {
             {/* Main Content */}
             <section className="py-12">
                 <div className="container px-6 lg:px-12 max-w-[1400px] mx-auto">
-                    {/* Toolbar */}
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
                         <p className="text-gray-500 dark:text-gray-400">
                             {language === 'bn'
-                                ? `${sortedGraphics.length}টি টেমপ্লেট পাওয়া গেছে`
-                                : `Showing ${sortedGraphics.length} templates`}
+                                ? `${totalResults}টি টেমপ্লেট পাওয়া গেছে`
+                                : `Showing ${totalResults} templates`}
                         </p>
 
                         <div className="flex items-center gap-4">
-                            {/* Sort */}
                             <div className="relative">
                                 <select
                                     value={sortBy}
@@ -344,7 +252,6 @@ export default function GraphicsPage() {
                                 <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
                             </div>
 
-                            {/* View Toggle */}
                             <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-full p-1">
                                 <button
                                     onClick={() => setViewMode("grid")}
@@ -360,7 +267,6 @@ export default function GraphicsPage() {
                                 </button>
                             </div>
 
-                            {/* Filter Button */}
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
                                 className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-800 rounded-full font-medium text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -371,8 +277,7 @@ export default function GraphicsPage() {
                         </div>
                     </div>
 
-                    {/* Products Grid */}
-                    {loading ? (
+                    {loading && graphics.length === 0 ? (
                         <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'}`}>
                             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                                 <div key={i} className="card overflow-hidden">
@@ -385,7 +290,7 @@ export default function GraphicsPage() {
                                 </div>
                             ))}
                         </div>
-                    ) : sortedGraphics.length === 0 ? (
+                    ) : graphics.length === 0 ? (
                         <div className="text-center py-20">
                             <div className="w-20 h-20 mx-auto rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-6">
                                 <FiSearch className="w-8 h-8 text-gray-400" />
@@ -399,7 +304,7 @@ export default function GraphicsPage() {
                         </div>
                     ) : (
                         <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'}`}>
-                            {sortedGraphics.map((item, index) => (
+                            {graphics.map((item, index) => (
                                 <motion.div
                                     key={item._id}
                                     initial={{ opacity: 0, y: 20 }}
@@ -407,21 +312,18 @@ export default function GraphicsPage() {
                                     transition={{ delay: index * 0.05 }}
                                     className={`group bg-white dark:bg-gray-900 rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-800 hover:border-primary/50 dark:hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/5 ${viewMode === 'list' ? 'flex' : ''}`}
                                 >
-                                    {/* Image */}
                                     <Link href={`/graphics/${item.slug}`} className={`relative block ${viewMode === 'list' ? 'w-64 flex-shrink-0' : ''}`}>
                                         <div className={`relative overflow-hidden ${viewMode === 'list' ? 'h-full' : 'aspect-[4/3]'}`}>
                                             <img
                                                 src={item.thumbnail}
-                                                alt={language === 'bn' ? item.titleBn : item.title}
+                                                alt={getTitle(item)}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                             />
-                                            {/* Sale Badge */}
                                             {item.salePrice && (
                                                 <div className="absolute top-4 left-4 px-3 py-1.5 bg-red-500 text-white text-xs font-bold rounded-full uppercase">
                                                     {language === 'bn' ? 'সেল' : 'Sale'}
                                                 </div>
                                             )}
-                                            {/* Quick Actions */}
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                                                 <button className="w-12 h-12 rounded-full bg-white flex items-center justify-center hover:bg-primary hover:text-black transition-colors">
                                                     <FiEye className="w-5 h-5" />
@@ -436,37 +338,32 @@ export default function GraphicsPage() {
                                         </div>
                                     </Link>
 
-                                    {/* Content */}
                                     <div className={`p-5 ${viewMode === 'list' ? 'flex-1 flex flex-col justify-center' : ''}`}>
-                                        {/* Category */}
                                         <span className="text-xs font-bold text-primary uppercase tracking-wider">
-                                            {language === 'bn' ? item.categoryBn : item.category}
+                                            {getCatName(item)}
                                         </span>
 
-                                        {/* Title */}
                                         <Link href={`/graphics/${item.slug}`}>
                                             <h3 className="font-bold text-gray-900 dark:text-white mt-2 mb-3 line-clamp-2 group-hover:text-primary transition-colors">
-                                                {language === 'bn' ? item.titleBn : item.title}
+                                                {getTitle(item)}
                                             </h3>
                                         </Link>
 
-                                        {/* Stats */}
                                         <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-4">
                                             <span className="flex items-center gap-1">
                                                 <FiStar className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                                                {item.rating}
+                                                {item.rating || 0}
                                             </span>
                                             <span className="flex items-center gap-1">
                                                 <FiDownload className="w-3.5 h-3.5" />
-                                                {item.downloads}
+                                                {item.downloads || 0}
                                             </span>
                                             <span className="flex items-center gap-1">
                                                 <FiHeart className="w-3.5 h-3.5" />
-                                                {item.likes}
+                                                {item.likes || 0}
                                             </span>
                                         </div>
 
-                                        {/* Price & Action */}
                                         <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
                                             <div className="flex items-center gap-2">
                                                 {item.salePrice ? (
@@ -489,11 +386,14 @@ export default function GraphicsPage() {
                         </div>
                     )}
 
-                    {/* Load More */}
-                    {sortedGraphics.length > 0 && (
+                    {page < totalPages && (
                         <div className="text-center mt-12">
-                            <button className="inline-flex items-center gap-3 px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold uppercase tracking-wider rounded-full hover:bg-primary hover:text-black transition-all">
-                                {language === 'bn' ? 'আরো দেখুন' : 'Load More'}
+                            <button
+                                onClick={handleLoadMore}
+                                disabled={loading}
+                                className="inline-flex items-center gap-3 px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold uppercase tracking-wider rounded-full hover:bg-primary hover:text-black transition-all"
+                            >
+                                {loading ? (language === 'bn' ? 'লোড হচ্ছে...' : 'Loading...') : (language === 'bn' ? 'আরো দেখুন' : 'Load More')}
                                 <FiArrowRight className="w-5 h-5" />
                             </button>
                         </div>

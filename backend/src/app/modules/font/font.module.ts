@@ -40,6 +40,7 @@ export interface IFont {
     salePrice?: number;
     licenses: { type: 'personal' | 'commercial' | 'extended' | 'app-embedding'; price: number; features: string[] }[];
     views: number;
+    likes: number;
     downloads: number;
     sales: number;
     rating: number;
@@ -56,15 +57,19 @@ const fontSchema = new Schema<IFont>(
     {
         title: { type: String, required: true, trim: true, maxlength: 200 },
         slug: { type: String, required: true, unique: true, lowercase: true },
-        description: { type: String, required: true },
+        description: { type: String, default: '' },
         seller: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-        type: { type: String, enum: ['display', 'script', 'sans-serif', 'serif', 'slab-serif', 'monospace', 'handwritten', 'decorative', 'bangla', 'arabic', 'other'], required: true },
+        type: { type: String, enum: ['display', 'script', 'sans-serif', 'serif', 'slab-serif', 'monospace', 'handwritten', 'decorative', 'bangla', 'arabic', 'other'], default: 'other' },
         category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
         tags: [{ type: String, trim: true }],
-        thumbnail: { type: String, required: true },
+        thumbnail: { type: String, default: '' },
         previewImages: [{ type: String }],
         previewText: { type: String },
-        mainFile: { url: { type: String, required: true }, size: { type: Number, required: true }, format: { type: String, required: true } },
+        mainFile: {
+            url: { type: String, default: '' },
+            size: { type: Number, default: 0 },
+            format: { type: String, default: '' }
+        },
         additionalFormats: [{ format: String, url: String, size: Number }],
         weights: [{ type: String }],
         styles: [{ type: String, enum: ['normal', 'italic', 'oblique'] }],
@@ -73,10 +78,11 @@ const fontSchema = new Schema<IFont>(
         openTypeFeatures: [{ type: String }],
         webFont: { type: Boolean, default: false },
         variableFont: { type: Boolean, default: false },
-        price: { type: Number, required: true, min: 0 },
+        price: { type: Number, default: 0, min: 0 },
         salePrice: { type: Number, min: 0 },
         licenses: [{ type: { type: String, enum: ['personal', 'commercial', 'extended', 'app-embedding'] }, price: Number, features: [String] }],
         views: { type: Number, default: 0 },
+        likes: { type: Number, default: 0 },
         downloads: { type: Number, default: 0 },
         sales: { type: Number, default: 0 },
         rating: { type: Number, default: 0, min: 0, max: 5 },
@@ -157,6 +163,10 @@ const FontService = {
         return { data, meta: { page: Number(page), limit: Number(limit), total, totalPages: Math.ceil(total / Number(limit)) } };
     },
     async incrementViews(id: string) { await Font.findByIdAndUpdate(id, { $inc: { views: 1 } }); },
+    async toggleLike(id: string, action: 'like' | 'unlike') {
+        const inc = action === 'like' ? 1 : -1;
+        return await Font.findByIdAndUpdate(id, { $inc: { likes: inc } }, { new: true });
+    },
     async updateStatus(id: string, status: string) {
         const updateData: Record<string, unknown> = { status };
         if (status === 'published') updateData.publishedAt = new Date();
@@ -165,7 +175,21 @@ const FontService = {
 };
 
 // ==================== VALIDATION ====================
-const createSchema = z.object({ body: z.object({ title: z.string().min(3).max(200), description: z.string().min(10), type: z.string(), category: z.string(), thumbnail: z.string(), mainFile: z.object({ url: z.string(), size: z.number(), format: z.string() }), price: z.number().min(0) }) });
+const createSchema = z.object({
+    body: z.object({
+        title: z.string().min(3).max(200),
+        description: z.string().optional(),
+        type: z.string().optional(),
+        category: z.string(),
+        thumbnail: z.string().optional(),
+        mainFile: z.object({
+            url: z.string().optional(),
+            size: z.number().optional(),
+            format: z.string().optional()
+        }).optional(),
+        price: z.number().min(0).optional()
+    })
+});
 const updateSchema = z.object({ body: z.object({ title: z.string().min(3).max(200).optional(), description: z.string().min(10).optional(), price: z.number().min(0).optional(), status: z.string().optional() }).passthrough() });
 
 // ==================== CONTROLLER ====================
@@ -176,6 +200,10 @@ const FontController = {
     update: catchAsync(async (req: Request, res: Response) => { const result = await FontService.update(req.params.id, req.user?._id, req.body, req.user?.role === 'admin'); sendResponse(res, { statusCode: 200, success: true, message: 'Font updated', data: result }); }),
     delete: catchAsync(async (req: Request, res: Response) => { await FontService.delete(req.params.id, req.user?._id, req.user?.role === 'admin'); sendResponse(res, { statusCode: 200, success: true, message: 'Font deleted', data: null }); }),
     getMy: catchAsync(async (req: Request, res: Response) => { const pagination = pick(req.query, ['page', 'limit']); const result = await FontService.getBySeller(req.user?._id, pagination); sendResponse(res, { statusCode: 200, success: true, message: 'Your fonts retrieved', meta: result.meta, data: result.data }); }),
+    toggleLike: catchAsync(async (req: Request, res: Response) => {
+        const result = await FontService.toggleLike(req.params.id, req.body.action);
+        sendResponse(res, { statusCode: 200, success: true, message: 'Like status updated', data: result });
+    }),
     updateStatus: catchAsync(async (req: Request, res: Response) => { const result = await FontService.updateStatus(req.params.id, req.body.status); sendResponse(res, { statusCode: 200, success: true, message: 'Status updated', data: result }); }),
 };
 
@@ -184,6 +212,7 @@ const router = express.Router();
 router.get('/', FontController.getAll);
 router.get('/seller/my', auth('seller', 'admin'), FontController.getMy);
 router.get('/:id', FontController.getById);
+router.post('/:id/like', FontController.toggleLike);
 router.post('/', auth('seller', 'admin'), validateRequest(createSchema), FontController.create);
 router.patch('/:id', auth('seller', 'admin'), validateRequest(updateSchema), FontController.update);
 router.delete('/:id', auth('seller', 'admin'), FontController.delete);

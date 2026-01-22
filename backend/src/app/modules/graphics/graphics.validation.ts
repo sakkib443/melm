@@ -27,35 +27,31 @@ const createGraphicsZodSchema = z.object({
         }).min(3, 'Title must be at least 3 characters')
             .max(200, 'Title cannot exceed 200 characters'),
 
-        description: z.string({
-            required_error: 'Description is required',
-        }).min(10, 'Description must be at least 10 characters'),
-
+        titleBn: z.string().optional(),
+        description: z.string().min(10, 'Description must be at least 10 characters').optional(),
+        descriptionBn: z.string().optional(),
         shortDescription: z.string().max(300).optional(),
+        shortDescriptionBn: z.string().max(500).optional(),
 
-        type: graphicsTypeEnum,
+        type: graphicsTypeEnum.optional(),
 
-        category: z.string({
-            required_error: 'Category is required',
-        }),
+        category: z.string().optional(),
 
         subCategory: z.string().optional(),
 
         tags: z.array(z.string()).optional(),
 
-        thumbnail: z.string({
-            required_error: 'Thumbnail is required',
-        }),
+        thumbnail: z.string().optional(),
 
         previewImages: z.array(z.string()).optional(),
 
         previewVideo: z.string().optional(),
 
         mainFile: z.object({
-            url: z.string({ required_error: 'Main file URL is required' }),
-            size: z.number({ required_error: 'File size is required' }),
-            format: fileFormatEnum,
-        }),
+            url: z.string().optional(),
+            size: z.number().optional(),
+            format: fileFormatEnum.optional(),
+        }).optional(),
 
         additionalFiles: z.array(z.object({
             name: z.string(),
@@ -67,9 +63,9 @@ const createGraphicsZodSchema = z.object({
         fileFormats: z.array(fileFormatEnum).optional(),
 
         dimensions: z.object({
-            width: z.number(),
-            height: z.number(),
-            unit: z.enum(['px', 'in', 'cm']).default('px'),
+            width: z.number().optional(),
+            height: z.number().optional(),
+            unit: z.enum(['px', 'in', 'cm']).default('px').optional(),
         }).optional(),
 
         dpi: z.number().optional(),
@@ -85,9 +81,7 @@ const createGraphicsZodSchema = z.object({
             version: z.string(),
         })).optional(),
 
-        price: z.number({
-            required_error: 'Price is required',
-        }).min(0, 'Price cannot be negative'),
+        price: z.number().min(0, 'Price cannot be negative').optional(),
 
         salePrice: z.number().min(0).optional(),
 
@@ -98,10 +92,13 @@ const createGraphicsZodSchema = z.object({
         })).optional(),
 
         features: z.array(z.string()).optional(),
+        featuresBn: z.array(z.string()).optional(),
         highlights: z.array(z.string()).optional(),
+        highlightsBn: z.array(z.string()).optional(),
         whatIncluded: z.array(z.string()).optional(),
+        whatIncludedBn: z.array(z.string()).optional(),
 
-        status: statusEnum.optional(),
+        status: statusEnum.default('draft').optional(),
 
         seoTitle: z.string().optional(),
         seoDescription: z.string().optional(),
@@ -109,61 +106,47 @@ const createGraphicsZodSchema = z.object({
     }),
 });
 
-// Update Graphics Validation
+// Update Graphics Validation - More flexible
 const updateGraphicsZodSchema = z.object({
     body: z.object({
         title: z.string().min(3).max(200).optional(),
-        description: z.string().min(10).optional(),
+        titleBn: z.string().optional(),
+        description: z.string().optional(),
+        descriptionBn: z.string().optional(),
         shortDescription: z.string().max(300).optional(),
+        shortDescriptionBn: z.string().max(500).optional(),
         type: graphicsTypeEnum.optional(),
         category: z.string().optional(),
-        subCategory: z.string().optional(),
+        subCategory: z.string().optional().nullable(),
         tags: z.array(z.string()).optional(),
         thumbnail: z.string().optional(),
         previewImages: z.array(z.string()).optional(),
-        previewVideo: z.string().optional(),
-        mainFile: z.object({
-            url: z.string(),
-            size: z.number(),
-            format: fileFormatEnum,
-        }).optional(),
-        additionalFiles: z.array(z.object({
-            name: z.string(),
-            url: z.string(),
-            size: z.number(),
-            format: z.string(),
-        })).optional(),
-        fileFormats: z.array(fileFormatEnum).optional(),
-        dimensions: z.object({
-            width: z.number(),
-            height: z.number(),
-            unit: z.enum(['px', 'in', 'cm']),
-        }).optional(),
-        dpi: z.number().optional(),
-        colorMode: z.enum(['RGB', 'CMYK', 'Grayscale']).optional(),
+        previewVideo: z.string().optional().nullable(),
+        mainFile: z.any().optional(),
+        additionalFiles: z.array(z.any()).optional(),
+        fileFormats: z.array(z.string()).optional(),
+        dimensions: z.any().optional(),
+        dpi: z.number().optional().nullable(),
+        colorMode: z.string().optional().nullable(),
         layered: z.boolean().optional(),
         editable: z.boolean().optional(),
-        compatibility: z.array(z.object({
-            software: z.string(),
-            version: z.string(),
-        })).optional(),
+        compatibility: z.array(z.any()).optional(),
         price: z.number().min(0).optional(),
-        salePrice: z.number().min(0).optional(),
-        licenses: z.array(z.object({
-            type: licenseTypeEnum,
-            price: z.number(),
-            features: z.array(z.string()),
-        })).optional(),
+        salePrice: z.number().min(0).optional().nullable(),
+        licenses: z.array(z.any()).optional(),
         features: z.array(z.string()).optional(),
+        featuresBn: z.array(z.string()).optional(),
         highlights: z.array(z.string()).optional(),
+        highlightsBn: z.array(z.string()).optional(),
         whatIncluded: z.array(z.string()).optional(),
+        whatIncludedBn: z.array(z.string()).optional(),
         status: statusEnum.optional(),
         isFeatured: z.boolean().optional(),
         version: z.string().optional(),
         seoTitle: z.string().optional(),
         seoDescription: z.string().optional(),
         seoKeywords: z.array(z.string()).optional(),
-    }),
+    }).passthrough(),
 });
 
 export const GraphicsValidation = {

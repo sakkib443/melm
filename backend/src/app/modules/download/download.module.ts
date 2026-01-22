@@ -18,8 +18,8 @@ export interface IDownload {
     user: Types.ObjectId;
     order: Types.ObjectId;
     product: Types.ObjectId;
-    productType: 'website' | 'software';
-    productModel: 'Website' | 'Software';
+    productType: 'website' | 'software' | 'course' | 'graphics' | 'audio' | 'font' | 'photo' | 'video-template' | 'ui-kit' | 'app-template';
+    productModel: string;
     productTitle: string;
     downloadCount: number;
     maxDownloads: number;
@@ -36,11 +36,15 @@ const downloadSchema = new Schema<IDownload>(
         user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         order: { type: Schema.Types.ObjectId, ref: 'Order', required: true },
         product: { type: Schema.Types.ObjectId, required: true, refPath: 'productModel' },
-        productType: { type: String, enum: ['website', 'software'], required: true },
-        productModel: { type: String, enum: ['Website', 'Software'], required: true },
+        productType: {
+            type: String,
+            enum: ['website', 'software', 'course', 'graphics', 'audio', 'font', 'photo', 'video-template', 'ui-kit', 'app-template'],
+            required: true
+        },
+        productModel: { type: String, required: true },
         productTitle: { type: String, required: true },
         downloadCount: { type: Number, default: 0 },
-        maxDownloads: { type: Number, default: 10 },
+        maxDownloads: { type: Number, default: 100 },
         lastDownload: { type: Date },
         expiryDate: { type: Date },
         isActive: { type: Boolean, default: true },
@@ -60,7 +64,7 @@ const DownloadService = {
         userId: string,
         orderId: string,
         productId: string,
-        productType: 'website' | 'software',
+        productType: IDownload['productType'],
         productTitle: string
     ): Promise<IDownload> {
         // Set expiry to 1 year from now
@@ -68,7 +72,20 @@ const DownloadService = {
         expiryDate.setFullYear(expiryDate.getFullYear() + 1);
 
         // Map productType to Mongoose model name
-        const productModel = productType === 'website' ? 'Website' : 'Software';
+        let productModel = '';
+        switch (productType) {
+            case 'website': productModel = 'Website'; break;
+            case 'software': productModel = 'Software'; break;
+            case 'course': productModel = 'Course'; break;
+            case 'graphics': productModel = 'Graphics'; break;
+            case 'audio': productModel = 'Audio'; break;
+            case 'font': productModel = 'Font'; break;
+            case 'photo': productModel = 'Photo'; break;
+            case 'video-template': productModel = 'VideoTemplate'; break;
+            case 'ui-kit': productModel = 'UiKit'; break;
+            case 'app-template': productModel = 'AppTemplate'; break;
+            default: productModel = 'Website';
+        }
 
         const download = await Download.create({
             user: userId,
@@ -96,6 +113,9 @@ const DownloadService = {
         userId: string,
         downloadId: string
     ): Promise<{ downloadUrl: string; expiresIn: number }> {
+        if (!Types.ObjectId.isValid(downloadId)) {
+            throw new AppError(400, 'Invalid download ID');
+        }
         const download = await Download.findOne({ _id: downloadId, user: userId });
 
         if (!download) {
@@ -132,6 +152,9 @@ const DownloadService = {
 
     // Check if user has access to product
     async hasAccess(userId: string, productId: string): Promise<boolean> {
+        if (!Types.ObjectId.isValid(productId)) {
+            return false; // Safely return false if ID is not a valid MongoDB ID (e.g. mock data)
+        }
         const download = await Download.findOne({
             user: userId,
             product: productId,

@@ -103,7 +103,7 @@ export default function Preloader() {
                             <span className="text-7xl font-black text-primary leading-none">ʌ</span>
                             <span className="text-4xl text-white mx-1">—›</span>
                             <span className="text-5xl font-black text-white tracking-[0.25em] uppercase">
-                                SAYEED
+                                SAKIB
                             </span>
                         </div>
 

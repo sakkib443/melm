@@ -72,4 +72,30 @@ export default {
     password: process.env.BKASH_PASSWORD || 'demo_password',
     base_url: process.env.BKASH_BASE_URL || 'https://tokenized.sandbox.bka.sh/v1.2.0-beta',
   },
+
+  // ==================== Nagad Payment Configuration ====================
+  // নগদ পেমেন্ট গেটওয়ে সেটিংস
+  nagad: {
+    merchant_id: process.env.NAGAD_MERCHANT_ID || 'demo_merchant',
+    merchant_number: process.env.NAGAD_MERCHANT_NUMBER || '01XXXXXXXXX',
+    public_key: process.env.NAGAD_PUBLIC_KEY || '',
+    private_key: process.env.NAGAD_PRIVATE_KEY || '',
+    base_url: process.env.NAGAD_BASE_URL || 'https://sandbox-ssl.mynagad.com',
+  },
+
+  // ==================== SSLCommerz Configuration ====================
+  // SSL Commerz পেমেন্ট গেটওয়ে সেটিংস
+  sslcommerz: {
+    store_id: process.env.SSL_STORE_ID || 'demo_store',
+    store_password: process.env.SSL_STORE_PASSWORD || 'demo_password',
+    is_live: process.env.SSL_IS_LIVE === 'true',
+  },
+
+  // ==================== Stripe Configuration ====================
+  // Stripe পেমেন্ট গেটওয়ে সেটিংস
+  stripe: {
+    secret_key: process.env.STRIPE_SECRET_KEY || '',
+    publishable_key: process.env.STRIPE_PUBLISHABLE_KEY || '',
+    webhook_secret: process.env.STRIPE_WEBHOOK_SECRET || '',
+  },
 };

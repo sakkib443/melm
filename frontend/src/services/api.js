@@ -33,7 +33,10 @@ export const apiFetch = async (endpoint, options = {}) => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
+        const error = new Error(data.message || "Something went wrong");
+        error.errorSources = data.errorSources;
+        error.data = data;
+        throw error;
     }
 
     return data;
@@ -134,7 +137,7 @@ export const graphicsService = {
         apiFetch(`/api/graphics/${id}`),
 
     getBySlug: (slug) =>
-        apiFetch(`/api/graphics/slug/${slug}`),
+        apiFetch(`/api/graphics/${slug}`),
 
     create: (data) =>
         apiFetch("/api/graphics", { method: "POST", body: JSON.stringify(data) }),
@@ -150,6 +153,9 @@ export const graphicsService = {
 
     updateStatus: (id, status) =>
         apiFetch(`/api/graphics/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }),
+
+    toggleLike: (id, action) =>
+        apiFetch(`/api/graphics/${id}/like`, { method: "POST", body: JSON.stringify({ action }) }),
 };
 
 // ==================== VIDEO TEMPLATE SERVICE ====================
@@ -258,6 +264,9 @@ export const fontService = {
 
     delete: (id) =>
         apiFetch(`/api/fonts/${id}`, { method: "DELETE" }),
+
+    toggleLike: (id, action) =>
+        apiFetch(`/api/fonts/${id}/like`, { method: "POST", body: JSON.stringify({ action }) }),
 };
 
 // ==================== COURSE SERVICE ====================
@@ -331,6 +340,9 @@ export const orderService = {
         return apiFetch(`/api/orders/admin/all${queryString}`);
     },
 
+    getStats: () =>
+        apiFetch("/api/orders/admin/stats"),
+
     getById: (id) =>
         apiFetch(`/api/orders/${id}`),
 
@@ -342,6 +354,9 @@ export const orderService = {
 
     updateStatus: (id, status) =>
         apiFetch(`/api/orders/admin/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }),
+
+    approve: (id, adminNote = "") =>
+        apiFetch(`/api/orders/admin/${id}/approve`, { method: "PATCH", body: JSON.stringify({ adminNote }) }),
 };
 
 // ==================== NOTIFICATION SERVICE ====================

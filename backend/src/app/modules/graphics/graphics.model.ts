@@ -15,6 +15,10 @@ const graphicsSchema = new Schema<IGraphics>(
             trim: true,
             maxlength: [200, 'Title cannot exceed 200 characters'],
         },
+        titleBn: {
+            type: String,
+            trim: true,
+        },
         slug: {
             type: String,
             required: true,
@@ -24,11 +28,18 @@ const graphicsSchema = new Schema<IGraphics>(
         },
         description: {
             type: String,
-            required: [true, 'Description is required'],
+        },
+        descriptionBn: {
+            type: String,
         },
         shortDescription: {
             type: String,
             maxlength: [300, 'Short description cannot exceed 300 characters'],
+            default: '',
+        },
+        shortDescriptionBn: {
+            type: String,
+            maxlength: [500, 'Short description cannot exceed 500 characters'],
             default: '',
         },
 
@@ -45,12 +56,10 @@ const graphicsSchema = new Schema<IGraphics>(
             enum: ['logo', 'flyer', 'banner', 'social-media', 'poster', 'brochure',
                 'business-card', 'infographic', 'resume', 'certificate',
                 'invitation', 'mockup', 'icon-set', 'illustration', 'other'],
-            required: true,
         },
         category: {
             type: Schema.Types.ObjectId,
             ref: 'Category',
-            required: true,
         },
         subCategory: {
             type: Schema.Types.ObjectId,
@@ -64,7 +73,6 @@ const graphicsSchema = new Schema<IGraphics>(
         // Media
         thumbnail: {
             type: String,
-            required: [true, 'Thumbnail is required'],
         },
         previewImages: [{
             type: String,
@@ -75,9 +83,9 @@ const graphicsSchema = new Schema<IGraphics>(
 
         // Files
         mainFile: {
-            url: { type: String, required: true },
-            size: { type: Number, required: true },
-            format: { type: String, required: true },
+            url: { type: String },
+            size: { type: Number },
+            format: { type: String },
         },
         additionalFiles: [{
             name: { type: String },
@@ -89,7 +97,6 @@ const graphicsSchema = new Schema<IGraphics>(
         // Technical Details
         fileFormats: [{
             type: String,
-            enum: ['psd', 'ai', 'eps', 'svg', 'png', 'jpg', 'pdf', 'figma', 'xd', 'sketch', 'canva'],
         }],
         dimensions: {
             width: { type: Number },
@@ -123,8 +130,8 @@ const graphicsSchema = new Schema<IGraphics>(
         // Pricing
         price: {
             type: Number,
-            required: [true, 'Price is required'],
             min: [0, 'Price cannot be negative'],
+            default: 0,
         },
         salePrice: {
             type: Number,
@@ -141,12 +148,16 @@ const graphicsSchema = new Schema<IGraphics>(
 
         // Features
         features: [{ type: String }],
+        featuresBn: [{ type: String }],
         highlights: [{ type: String }],
+        highlightsBn: [{ type: String }],
         whatIncluded: [{ type: String }],
+        whatIncludedBn: [{ type: String }],
 
         // Stats
         views: { type: Number, default: 0 },
         downloads: { type: Number, default: 0 },
+        likes: { type: Number, default: 0 },
         sales: { type: Number, default: 0 },
         rating: { type: Number, default: 0, min: 0, max: 5 },
         reviewCount: { type: Number, default: 0 },
